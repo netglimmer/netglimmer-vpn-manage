@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Netglimmer VPN Manager — 把 VPN 服务器装进浏览器</title>
+<meta name="description" content="企业级 OpenConnect VPN 一站式管理面板：一键部署、纯离线授权、域名级访问控制、玻璃拟态界面。">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e9d78' stroke-width='2'%3E%3Cpath d='M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z'/%3E%3C/svg%3E">
+<style>
+:root{
+  --bg:#f2f5f1; --ink:#22302a; --mut:#5c6d63; --dim:#8a978f;
+  --acc:#2e9d78; --acc2:#60a0d8; --ok:#3aa86f;
+  --line:rgba(34,48,42,.13); --line-soft:rgba(34,48,42,.08);
+  --glass:linear-gradient(160deg,rgba(255,255,255,.78),rgba(255,255,255,.5));
+  --mono:ui-monospace,"JetBrains Mono","Cascadia Code",Consolas,"Courier New",monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg); color:var(--ink);
+  font:16px/1.75 "PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",system-ui,sans-serif;
+  overflow-x:hidden;
+}
+/* ── 背景层：深色 + 微光 + 细网格，供玻璃折射 ── */
+body::before{
+  content:""; position:fixed; inset:0; z-index:-2;
+  background:
+    radial-gradient(900px 520px at 12% -6%, rgba(46,157,120,.13), transparent 60%),
+    radial-gradient(800px 500px at 88% 4%, rgba(96,160,216,.11), transparent 60%),
+    radial-gradient(1000px 600px at 50% 115%, rgba(58,168,111,.08), transparent 60%),
+    var(--bg);
+}
+body::after{
+  content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    linear-gradient(rgba(34,48,42,.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34,48,42,.045) 1px, transparent 1px);
+  background-size:52px 52px;
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 90%);
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%, #000 30%, transparent 90%);
+}
+.orb{position:fixed;border-radius:50%;filter:blur(90px);z-index:-1;opacity:.5;animation:drift 14s ease-in-out infinite alternate}
+.orb.a{width:420px;height:420px;left:-120px;top:16%;background:rgba(46,157,120,.14)}
+.orb.b{width:360px;height:360px;right:-100px;top:52%;background:rgba(96,160,216,.13);animation-delay:-7s}
+@keyframes drift{from{transform:translateY(-24px)}to{transform:translateY(30px)}}
+
+.wrap{width:min(1160px,92vw);margin-inline:auto}
+.mono{font-family:var(--mono)}
+.glass{
+  background:var(--glass);
+  -webkit-backdrop-filter:blur(20px) saturate(150%);
+  backdrop-filter:blur(20px) saturate(150%);
+  border:1px solid var(--line); border-radius:22px;
+  box-shadow:0 24px 60px rgba(34,48,42,.12), inset 0 1px 0 rgba(255,255,255,.9);
+}
+
+/* ── 导航 ── */
+.nav{position:fixed;top:18px;left:0;right:0;z-index:50}
+.nav-in{display:flex;align-items:center;gap:28px;padding:12px 22px;border-radius:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.02em;font-size:17px}
+.logo svg{flex:none}
+.logo b{color:var(--acc);font-weight:700}
+.nav-links{display:flex;gap:26px;margin-left:auto}
+.nav-links a{color:var(--mut);text-decoration:none;font-size:14px;transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:12px;text-decoration:none;font-size:14.5px;font-weight:600;transition:transform .2s, box-shadow .2s, background .2s;cursor:pointer;border:1px solid transparent}
+.btn-p{background:linear-gradient(160deg,rgba(46,157,120,.22),rgba(46,157,120,.08));border-color:rgba(46,157,120,.45);color:#ffffff;box-shadow:0 0 24px rgba(46,157,120,.18), inset 0 1px 0 rgba(255,255,255,.25)}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 6px 32px rgba(46,157,120,.3)}
+.btn-g{border-color:var(--line);color:var(--mut)}
+.btn-g:hover{color:var(--ink);border-color:rgba(34,48,42,.3)}
+
+/* ── Hero ── */
+.hero{padding:170px 0 90px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.34em;color:var(--acc);margin-bottom:22px}
+h1{font-size:clamp(34px,4.6vw,58px);line-height:1.18;font-weight:800;letter-spacing:.01em}
+.hl{font-style:normal;color:var(--acc);text-shadow:0 0 28px rgba(46,157,120,.45)}
+.lede{color:var(--mut);font-size:16.5px;max-width:34em;margin:26px 0 34px}
+.cta-row{display:flex;gap:14px;flex-wrap:wrap}
+.stats{display:flex;gap:0;list-style:none;margin-top:44px;border-top:1px solid var(--line-soft);padding-top:22px}
+.stats li{flex:1;padding:0 18px;border-left:1px solid var(--line-soft)}
+.stats li:first-child{padding-left:0;border-left:none}
+.stats b{display:block;font-size:22px;font-weight:700;color:var(--ink);font-family:var(--mono)}
+.stats span{font-size:12.5px;color:var(--dim);letter-spacing:.08em}
+
+/* ── Hero 右侧：玻璃控制台模拟 ── */
+.mock{position:relative;padding:22px 22px 18px;border-radius:24px}
+.mock-bar{display:flex;align-items:center;gap:8px;margin-bottom:18px}
+.mock-bar i{width:10px;height:10px;border-radius:50%;background:rgba(34,48,42,.15)}
+.mock-bar i:first-child{background:#f87171}.mock-bar i:nth-child(2){background:#fbbf24}.mock-bar i:nth-child(3){background:#3aa86f}
+.mock-bar span{margin-left:auto;font-family:var(--mono);font-size:11.5px;color:var(--dim);letter-spacing:.12em}
+.mock-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.ms{background:rgba(34,48,42,.05);border:1px solid var(--line-soft);border-radius:14px;padding:12px 16px}
+.ms b{font-family:var(--mono);font-size:24px;font-weight:700}
+.ms small{display:block;color:var(--dim);font-size:11.5px;letter-spacing:.1em;margin-bottom:2px}
+.ms .up{color:var(--ok)}
+.spark{width:100%;height:64px;display:block;margin:4px 0 14px}
+.spark path{fill:none;stroke:var(--acc);stroke-width:2;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(46,157,120,.6));stroke-dasharray:600;stroke-dashoffset:600;animation:draw 2.4s .4s ease forwards}
+.spark .fill{stroke:none;fill:url(#sg);opacity:0;animation:fadein 1s 2s forwards;filter:none}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:1}}
+.row{display:flex;align-items:center;gap:12px;padding:9px 4px;border-top:1px solid var(--line-soft);font-size:13px}
+.row .dot{width:7px;height:7px;border-radius:50%;background:var(--ok);box-shadow:0 0 8px var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{50%{opacity:.35}}
+.row .name{font-family:var(--mono);color:var(--ink)}
+.row .grp{font-size:11px;color:var(--acc2);border:1px solid rgba(96,160,216,.4);border-radius:99px;padding:1px 9px}
+.row .bar{margin-left:auto;width:110px;height:4px;border-radius:99px;background:rgba(34,48,42,.1);overflow:hidden}
+.row .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--acc),var(--acc2))}
+.row .traf{font-family:var(--mono);font-size:11.5px;color:var(--dim);width:64px;text-align:right}
+.chip{position:absolute;padding:10px 16px;border-radius:14px;font-size:12.5px;display:flex;align-items:center;gap:8px;animation:drift 7s ease-in-out infinite alternate}
+.chip svg{flex:none}
+.chip.c1{top:-22px;right:-14px;color:#1e7a52;border-color:rgba(58,168,111,.4)}
+.chip.c2{bottom:-20px;left:-16px;color:#34648f;border-color:rgba(96,160,216,.4);animation-delay:-3.5s}
+
+/* ── 区块标题 ── */
+section{padding:56px 0}
+section[id]{scroll-margin-top:96px}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.sec-head{display:flex;align-items:baseline;gap:18px;margin-bottom:14px}
+.sec-no{font-family:var(--mono);font-size:13px;color:var(--acc);letter-spacing:.3em}
+.sec-head::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+h2{font-size:clamp(26px,3.2vw,38px);font-weight:800;margin-bottom:12px}
+.sec-sub{color:var(--mut);margin-bottom:40px;max-width:40em}
+
+/* ── 优势 bento ── */
+.bento{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}
+.card{padding:30px 30px 26px;position:relative;overflow:hidden;transition:transform .25s, border-color .25s}
+.card:hover{transform:translateY(-4px);border-color:rgba(34,48,42,.25)}
+.card .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(46,157,120,.1);border:1px solid rgba(46,157,120,.3);color:var(--acc);margin-bottom:18px}
+.card.v .ico{background:rgba(96,160,216,.1);border-color:rgba(96,160,216,.32);color:var(--acc2)}
+.card.g .ico{background:rgba(58,168,111,.1);border-color:rgba(58,168,111,.32);color:var(--ok)}
+.card h3{font-size:19px;font-weight:700;margin-bottom:10px}
+.card p{color:var(--mut);font-size:14.5px}
+.tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.tags span{font-family:var(--mono);font-size:11.5px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:3px 12px;background:rgba(34,48,42,.04)}
+.s7{grid-column:span 7}.s5{grid-column:span 5}.s8{grid-column:span 8}.s4{grid-column:span 4}
+.mini-bars{display:flex;align-items:flex-end;gap:6px;height:56px;margin-top:20px}
+.mini-bars i{flex:1;border-radius:4px 4px 0 0;background:linear-gradient(180deg,rgba(46,157,120,.7),rgba(46,157,120,.12));animation:grow 1.2s ease both}
+.mini-bars i:nth-child(2){animation-delay:.08s}.mini-bars i:nth-child(3){animation-delay:.16s}.mini-bars i:nth-child(4){animation-delay:.24s}.mini-bars i:nth-child(5){animation-delay:.32s}.mini-bars i:nth-child(6){animation-delay:.4s}.mini-bars i:nth-child(7){animation-delay:.48s}
+@keyframes grow{from{transform:scaleY(.2);transform-origin:bottom}}
+
+/* ── 对比 ── */
+.cmp{padding:8px 34px}
+.cmp-row{display:grid;grid-template-columns:1fr 44px 1fr;gap:20px;align-items:center;padding:17px 0;border-bottom:1px solid var(--line-soft)}
+.cmp-row:last-child{border-bottom:none}
+.cmp-old{font-family:var(--mono);font-size:13px;color:var(--dim)}
+.cmp-arrow{color:var(--acc);text-align:center;font-family:var(--mono)}
+.cmp-new{font-size:14.5px;color:var(--ink)}
+.cmp-head{font-size:12px;letter-spacing:.2em;color:var(--dim);font-family:var(--mono)}
+.cmp-head .n{color:var(--acc)}
+
+/* ── 部署 ── */
+.deploy-code{display:flex;align-items:center;gap:16px;padding:22px 26px;font-family:var(--mono);font-size:15.5px}
+.deploy-code .dollar{color:var(--acc)}
+.deploy-code code{color:var(--ink);letter-spacing:.02em;flex:1;overflow-x:auto;white-space:nowrap}
+.copy{flex:none}
+.deploy-notes{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}
+.deploy-notes span{font-size:13px;color:var(--mut);border:1px solid var(--line);background:rgba(34,48,42,.04);border-radius:99px;padding:6px 16px}
+.deploy-notes span b{color:var(--acc);font-weight:600}
+
+footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px}
+.foot{display:flex;align-items:center;gap:16px;color:var(--dim);font-size:13px}
+.foot .logo{font-size:15px;color:var(--ink)}
+.foot span{margin-left:auto;font-family:var(--mono);letter-spacing:.14em}
+
+/* ── 功能矩阵 ── */
+.spec{display:grid;grid-template-columns:repeat(4,1fr)}
+.spec-col{padding:28px 30px;border-left:1px solid var(--line-soft)}
+.spec-col:first-child{border-left:none}
+.spec-col h4{font-family:var(--mono);font-size:11.5px;letter-spacing:.24em;color:var(--acc);margin-bottom:16px;font-weight:600}
+.spec-col.v h4{color:var(--acc2)}.spec-col.g h4{color:var(--ok)}.spec-col.y h4{color:#fbbf24}
+.spec-col ul{list-style:none}
+.spec-col li{display:flex;gap:9px;align-items:flex-start;font-size:13.5px;color:var(--mut);padding:5.5px 0}
+.spec-col li b{color:var(--ink);font-weight:600}
+.spec-col li svg{flex:none;margin-top:6px;color:var(--acc)}
+.spec-col.v li svg{color:var(--acc2)}.spec-col.g li svg{color:var(--ok)}.spec-col.y li svg{color:#fbbf24}
+.band{display:flex;flex-wrap:wrap;gap:10px;padding:20px 26px;align-items:center;margin-top:18px}
+.band .t{font-family:var(--mono);font-size:11.5px;letter-spacing:.26em;color:var(--ok);margin-right:10px;font-weight:600}
+.band span:not(.t){font-family:var(--mono);font-size:12px;color:var(--mut);border:1px solid var(--line);border-radius:99px;padding:4px 14px;background:rgba(34,48,42,.04)}
+
+/* ── FAQ ── */
+.faq details{border-bottom:1px solid var(--line-soft)}
+.faq details:last-child{border-bottom:none}
+.faq summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:16px;padding:19px 8px;font-size:15.5px;font-weight:600;color:var(--ink);transition:color .2s}
+.faq summary:hover{color:var(--acc)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary .no{font-family:var(--mono);font-size:12px;color:var(--dim)}
+.faq summary .plus{margin-left:auto;color:var(--acc);font-family:var(--mono);font-size:18px;transition:transform .25s}
+.faq details[open] .plus{transform:rotate(45deg)}
+.faq .a{padding:0 8px 22px 44px;color:var(--mut);font-size:14px;max-width:58em}
+.faq .a b{color:var(--ink)}
+
+/* ── 应用场景 (优化版) ── */
+.scenes {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+}
+.scene {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 48px;
+  padding: 44px;
+  align-items: center;
+  border-radius: 24px;
+  background: rgba(255,255,255,0.35);
+  border: 1px solid var(--line-soft);
+  box-shadow: 0 12px 40px rgba(34,48,42,0.06);
+  overflow: hidden;
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+.scene:hover {
+  transform: translateY(-4px);
+  border-color: rgba(46,157,120,.3);
+  box-shadow: 0 20px 50px rgba(34,48,42,0.1);
+}
+.scene-txt { grid-column: 2; }
+.scene-txt h3 { font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+.scene-txt > p { color: var(--mut); font-size: 15px; line-height: 1.7; }
+.scene-txt strong { color: var(--ink); font-weight: 600; }
+.scene-list { list-style: none; margin-top: 20px; }
+.scene-list li {
+  position: relative; color: var(--mut); font-size: 14px; 
+  padding: 6px 0 6px 22px; line-height: 1.6;
+}
+.scene-list li::before {
+  content: "▸"; position: absolute; left: 0; color: var(--acc); font-size: 13px; top: 8px;
+}
+.scene-list li b { color: var(--ink); font-weight: 600; }
+.scene-viz { grid-column: 1; grid-row: 1; position: relative; }
+.scene-svg { width: 100%; height: auto; display: block; overflow: visible; }
+.f-mut{fill:var(--mut)} .f-dim{fill:var(--dim)} .f-acc{fill:var(--acc)}
+
+.ic { color: var(--mut); transition: color .3s; }
+.ic.acc { color: var(--acc); }
+.flow { stroke-dasharray: 6 8; animation: dashmove 1.2s linear infinite; }
+@keyframes dashmove { to { stroke-dashoffset: -14; } }
+.pk { fill: var(--acc); filter: drop-shadow(0 0 6px rgba(46,157,120,.9)); offset-rotate: 0deg; animation: move 3.2s linear infinite; }
+.pk.v { fill: var(--acc2); filter: drop-shadow(0 0 6px rgba(96,160,216,.9)); }
+.pk.p2 { animation-delay: -1.1s; } .pk.p3 { animation-delay: -2.2s; }
+@keyframes move { 0% { offset-distance: 0%; opacity: 0; } 7% { opacity: 1; } 93% { opacity: 1; } 100% { offset-distance: 100%; opacity: 0; } }
+@supports not (offset-path:path("M0 0 L1 1")){
+  .pk{transform:translate(var(--fx,0),var(--fy,0));animation:blink 1.8s ease-in-out infinite}
+  @keyframes blink{50%{opacity:.15}}
+}
+.svg-chip {
+  position: absolute; left: 50%; top: 2%; transform: translateX(-50%);
+  display: flex; align-items: center; gap: 8px; padding: 8px 18px;
+  border-radius: 99px; font-family: var(--mono); font-size: 12px; font-weight: 600;
+  letter-spacing: .1em; color: #1e7a52; border: 1px solid rgba(58,168,111,.35);
+  background: rgba(255,255,255,.95); box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); z-index: 2;
+}
+.svg-chip.v { color: #34648f; border-color: rgba(96,160,216,.35); }
+.svg-chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); animation: pulse 2s infinite; }
+@media (prefers-reduced-motion:reduce){
+  .flow,.pk,.svg-chip i,.orb,.chip,.row .dot,.mini-bars i,.spark path{animation:none}
+  .spark path{stroke-dashoffset:0}
+  .spark .fill{opacity:1}
+  .rv{transition:none}
+}
+
+/* ── 进场动画 ── */
+.rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease}
+.rv.on{opacity:1;transform:none}
+
+@media (max-width:960px){
+  .hero{grid-template-columns:1fr;padding-top:130px;gap:44px}
+  .nav-links{display:none}
+  .nav-in{gap:14px;padding:10px 14px}
+  .btn{padding:9px 16px;font-size:13.5px}
+  .s7,.s5,.s8,.s4{grid-column:span 12}
+  section{padding:46px 0}
+  .stats{flex-wrap:wrap;gap:16px 12px}
+  .stats li{flex:1 1 40%;border-left:none;padding:0}
+  .cmp{padding:8px 20px}
+  .cmp-row{grid-template-columns:1fr;gap:6px}
+  .cmp-arrow{display:none}
+  .spec{grid-template-columns:1fr 1fr}
+  .spec-col{border-left:none;border-top:1px solid var(--line-soft)}
+  .spec-col:nth-child(-n+2){border-top:none}
+  .spec-col:nth-child(2n){border-left:1px solid var(--line-soft)}
+  .card{padding:24px 22px 22px}
+  .mock{padding:18px 16px 14px}
+  .row{gap:9px;font-size:12.5px;padding:8px 2px}
+  .row .bar{width:72px}
+  .row .traf{width:56px;font-size:11px}
+  .chip{padding:8px 12px;font-size:11.5px}
+  .chip.c1{top:-18px;right:-4px}
+  .chip.c2{bottom:-16px;left:-4px}
+  .orb.a{width:300px;height:300px;left:-140px}
+  .orb.b{width:260px;height:260px;right:-120px}
+
+  /* 移动端应用场景回归单列 */
+  .scenes{grid-template-columns:1fr}
+  .scene { grid-template-columns: 1fr; gap: 24px; padding: 28px 20px; }
+  .scene-viz { grid-column: 1; grid-row: auto; }
+  .scene-txt { grid-column: 1; margin-top: 0; }
+}
+
+/* ── 小屏手机 ── */
+@media (max-width:640px){
+  .hero{padding-top:112px;gap:36px}
+  .stats{margin-top:32px}
+  .sec-sub{margin-bottom:28px}
+  .spec{grid-template-columns:1fr}
+  .spec-col{border-left:none;border-top:1px solid var(--line-soft)}
+  .spec-col:nth-child(-n+2){border-top:1px solid var(--line-soft)}
+  .spec-col:nth-child(2n){border-left:none}
+  .spec-col:first-child{border-top:none}
+  .cmp-row{padding:14px 0}
+  .deploy-code{padding:16px 18px;font-size:13.5px;gap:10px}
+  .mock-stats{gap:10px}
+  .ms{padding:10px 14px}
+  .ms b{font-size:20px}
+  .faq summary{padding:16px 4px;font-size:14.5px;gap:12px}
+  .faq .a{padding-left:34px}
+  footer{margin-top:36px;padding:28px 0 calc(32px + env(safe-area-inset-bottom))}
+  .foot{flex-wrap:wrap;gap:8px 16px}
+  .foot span{margin-left:0;width:100%}
+}
+
+@media (max-width:420px){
+  h1{font-size:30px}
+  h2{font-size:24px}
+  .eyebrow{font-size:11px;letter-spacing:.24em}
+  .lede{font-size:15px;margin:20px 0 26px}
+  .cta-row .btn{flex:1;justify-content:center}
+  .nav-in{padding:9px 12px}
+  .logo{font-size:15.5px}
+  .mock-bar span{font-size:10px;letter-spacing:.08em}
+  .row .bar{width:48px}
+  .chip{font-size:11px;padding:7px 10px}
+  .stats li{flex:1 1 46%}
+  .scene{padding:22px 16px}
+  .scene-txt h3{font-size:19px}
+  .svg-chip{font-size:10.5px;padding:6px 12px}
+}
+</style>
+<noscript><style>.rv{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+<div class="orb a"></div><div class="orb b"></div>
+
+<header class="nav"><div class="wrap"><div class="nav-in glass">
+  <div class="logo">
+    <svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2e9d78" stroke-width="2" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/></svg>
+    Netglimmer&nbsp;<b>VPN</b>
+  </div>
+  <nav class="nav-links">
+    <a href="#strengths">核心优势</a><a href="#compare">时代对比</a><a href="#scenarios">应用场景</a><a href="#features">全部功能</a><a href="#faq">问答</a><a href="#deploy">部署</a>
+  </nav>
+  <a class="btn btn-p" href="#deploy" style="margin-left:auto">立即体验</a>
+</div></div></header>
+
+<main class="wrap">
+  <!-- ═══ Hero ═══ -->
+  <section class="hero">
+    <div>
+      <p class="eyebrow rv">OPENCONNECT · SELF-HOSTED · OFFLINE-FIRST</p>
+      <h1 class="rv">把整台 VPN 服务器，<br>装进<em class="hl">浏览器</em>。</h1>
+      <p class="lede rv">Netglimmer 将 OpenConnect 的完整生命周期——用户、隔离、访问控制、证书、流量、备份——收进一块通透的玻璃面板。你只需要点击，剩下的交给它。</p>
+      <div class="cta-row rv">
+        <a class="btn btn-p" href="#deploy">一行命令部署</a>
+        <a class="btn btn-g" href="#strengths">看看它强在哪</a>
+      </div>
+      <ul class="stats rv">
+        <li><b>1</b><span>行命令完成部署</span></li>
+        <li><b>15</b><span>天全功能免费试用</span></li>
+        <li><b>100%</b><span>离线授权 · 零上报</span></li>
+        <li><b>2</b><span>种语言 · 明暗双主题</span></li>
+      </ul>
+    </div>
+
+    <div class="rv" style="position:relative">
+      <div class="mock glass">
+        <div class="mock-bar"><i></i><i></i><i></i><span>NETGLIMMER CONSOLE · LIVE</span></div>
+        <div class="mock-stats">
+          <div class="ms"><small>在线用户</small><b class="up">12</b></div>
+          <div class="ms"><small>今日流量</small><b>86.4<span style="font-size:12px;color:var(--dim)"> GB</span></b></div>
+        </div>
+        <svg class="spark" aria-hidden="true" viewBox="0 0 260 64" preserveAspectRatio="none">
+          <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(46,157,120,.28)"/><stop offset="1" stop-color="rgba(46,157,120,0)"/></linearGradient></defs>
+          <path class="fill" d="M0 46 C20 42 30 30 46 32 S76 50 96 44 126 18 146 22 176 40 196 30 236 10 260 16 V64 H0 Z"/>
+          <path vector-effect="non-scaling-stroke" d="M0 46 C20 42 30 30 46 32 S76 50 96 44 126 18 146 22 176 40 196 30 236 10 260 16"/>
+        </svg>
+        <div class="row"><span class="dot"></span><span class="name">chen.yu</span><span class="grp">财务组</span><span class="bar"><i style="width:72%"></i></span><span class="traf">31.2 GB</span></div>
+        <div class="row"><span class="dot"></span><span class="name">lin.mo</span><span class="grp">研发组</span><span class="bar"><i style="width:45%"></i></span><span class="traf">18.7 GB</span></div>
+        <div class="row"><span class="dot"></span><span class="name">zhao.ke</span><span class="grp">外部顾问</span><span class="bar"><i style="width:22%"></i></span><span class="traf">6.1 GB</span></div>
+      </div>
+      <div class="chip c1 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3aa86f" stroke-width="2.4" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg>域名放行 · www.baidu.com 已生效</div>
+      <div class="chip c2 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a0d8" stroke-width="2.2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21h4"/></svg>证书 30 天后到期 · 已通知</div>
+    </div>
+  </section>
+
+  <!-- ═══ 核心优势 ═══ -->
+  <section id="strengths">
+    <div class="sec-head rv"><span class="sec-no">01 / STRENGTHS</span></div>
+    <h2 class="rv">优势，是它唯一的说明书</h2>
+    <p class="sec-sub rv">不谈架构、不堆参数。以下每一条，都是你选择它的理由。</p>
+
+    <div class="bento">
+      <div class="card s7 glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12a7 7 0 0114 0"/><path d="M2 12h3M19 12h3"/><rect x="9" y="12" width="6" height="9" rx="2"/></svg></div>
+        <h3>从部署到授权，全程离线</h3>
+        <p>安装包自带全部组件，授权校验无需联网。内网、隔离环境、边缘节点，同样一键落地——你的服务器，不向任何人"打电话"。</p>
+        <div class="tags"><span>一行安装</span><span>离线授权</span><span>零遥测</span><span>内网友好</span></div>
+      </div>
+
+      <div class="card s5 v glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></div>
+        <h3>443 端口，隐形于日常</h3>
+        <p>主动探测者看到的只是一个普通网站；只有带着暗号的访问者，才敲得开 VPN 的门。隐蔽，是面板上的一个开关。</p>
+        <div class="tags"><span>服务伪装</span><span>暗号接入</span></div>
+      </div>
+
+      <div class="card s5 glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/></svg></div>
+        <h3>域名智能放行</h3>
+        <p>写下域名，访问控制即刻生效；CDN 如何轮换 IP，都自动跟随。不维护清单，不重写规则。</p>
+        <div class="tags"><span>按域名管控</span><span>IP 自动跟随</span></div>
+      </div>
+
+      <div class="card s7 v glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></div>
+        <h3>流量与连接，一目了然</h3>
+        <p>趋势、排行、每一次连接的细节，长期自动归档。谁在用、用了多少、何时在用——不用猜，看一眼就知道。</p>
+        <div class="mini-bars"><i style="height:34%"></i><i style="height:58%"></i><i style="height:42%"></i><i style="height:76%"></i><i style="height:60%"></i><i style="height:92%"></i><i style="height:70%"></i></div>
+      </div>
+
+      <div class="card s8 g glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
+        <h3>加密备份，异地安心</h3>
+        <p>备份可加密、可定时、可推送到千里之外的另一台机器。灾难来临时，一次导入，完整归来。</p>
+        <div class="tags"><span>AES-256 加密</span><span>每日自动</span><span>SSH 异地推送</span></div>
+      </div>
+
+      <div class="card s4 glass rv">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21h4"/></svg></div>
+        <h3>告警，不隔夜</h3>
+        <p>邮件、飞书与 Telegram 三通道，从暴力破解到证书到期，22 类事件实时送达。</p>
+        <div class="tags"><span>邮件</span><span>飞书</span><span>Telegram</span><span>22 类事件</span></div>
+      </div>
+
+      <div class="card glass rv" style="grid-column:span 12">
+        <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/><circle cx="16" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg></div>
+        <h3>全球态势，一张地图</h3>
+        <p>连接来自哪些国家、谁是常客、谁在反复叩门——世界与中国双视图热力呈现，来源到服务器的路径一目了然；登录失败与封禁来源，红色一眼锁定。一键开启全屏大屏，独立令牌长驻展示，挂在指挥中心屏幕上不超时。</p>
+        <div class="tags"><span>离线地图</span><span>世界 / 中国双视图</span><span>全屏大屏</span><span>服务器位置标注</span><span>威胁标记</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 对比 ═══ -->
+  <section id="compare">
+    <div class="sec-head rv"><span class="sec-no">02 / CONTRAST</span></div>
+    <h2 class="rv">同一件事，两个时代</h2>
+    <p class="sec-sub rv">没有贬低命令行的意思——只是你的时间，值得花在别处。</p>
+
+    <div class="cmp glass rv">
+      <div class="cmp-row cmp-head"><span>命令行时代</span><span></span><span class="n">NETGLIMMER 时代</span></div>
+      <div class="cmp-row"><span class="cmp-old">ssh 上去，ocpasswd 加用户，祈祷别敲错</span><span class="cmp-arrow">──▶</span><span class="cmp-new">网页三下点击，CSV 批量导入也支持</span></div>
+      <div class="cmp-row"><span class="cmp-old">occtl show users 看谁在线</span><span class="cmp-arrow">──▶</span><span class="cmp-new">实时列表自动刷新，一键踢出</span></div>
+      <div class="cmp-row"><span class="cmp-old">手写 iptables，改错就断网</span><span class="cmp-arrow">──▶</span><span class="cmp-new">可视化规则，命中计数实时可见</span></div>
+      <div class="cmp-row"><span class="cmp-old">背 openssl 参数签证书</span><span class="cmp-arrow">──▶</span><span class="cmp-new">网页填表签发，一键下载</span></div>
+      <div class="cmp-row"><span class="cmp-old">改配置、重启服务、等用户投诉</span><span class="cmp-arrow">──▶</span><span class="cmp-new">表单保存即生效，在线用户不掉线</span></div>
+      <div class="cmp-row"><span class="cmp-old">交接运维？先教会他 Linux</span><span class="cmp-arrow">──▶</span><span class="cmp-new">给他一个浏览器地址就够了</span></div>
+    </div>
+  </section>
+
+  <!-- ═══ 应用场景 ═══ -->
+  <section id="scenarios">
+    <div class="sec-head rv"><span class="sec-no">03 / SCENARIOS</span></div>
+    <h2 class="rv">它解决的，是这两种日常</h2>
+    <p class="sec-sub rv">不需要懂深奥的网络原理，看图就好：明确的公网接入点，加密的数据流向。</p>
+
+    <div class="scenes">
+      <!-- 场景一：远程访问 -->
+      <div class="scene rv">
+        <div class="scene-viz">
+          <!-- 画布拉宽，展示更清晰的链路 -->
+          <svg class="scene-svg" aria-hidden="true" viewBox="0 0 460 240" fill="none">
+            <!-- 骨干路径 -->
+            <path class="flow" d="M80 140 C140 140 170 80 230 80 C290 80 320 140 380 140" stroke="rgba(46,157,120,.4)" stroke-width="2"/>
+            
+            <!-- 动画光点 -->
+            <circle class="pk" r="3.5" style="offset-path:path('M80 140 C140 140 170 80 230 80 C290 80 320 140 380 140');--fx:80px;--fy:140px"/>
+            <circle class="pk p2" r="3.5" style="offset-path:path('M80 140 C140 140 170 80 230 80 C290 80 320 140 380 140');--fx:80px;--fy:140px"/>
+            
+            <!-- 员工电脑 (左侧) -->
+            <g class="ic" transform="translate(62 105) scale(1.6)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/>
+            </g>
+            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">家庭/移动办公</text>
+            <rect x="36" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
+            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11">无需公网 IP</text>
+
+            <!-- 网关服务器 (中央) -->
+            <g class="ic acc" transform="translate(210 25) scale(1.8)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+              <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>
+            </g>
+            <text x="230" y="105" text-anchor="middle" class="f-acc" font-size="12" font-weight="600">NETGLIMMER 网关</text>
+            <rect x="180" y="115" width="100" height="22" rx="11" fill="rgba(46,157,120,.1)" stroke="rgba(46,157,120,.3)"/>
+            <text x="230" y="130" text-anchor="middle" fill="#1e7a52" font-size="11" font-weight="600">必须具备公网 IP</text>
+
+            <!-- 公司内网 (右侧) -->
+            <g class="ic" transform="translate(362 108) scale(1.6)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>
+            </g>
+            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">企业内网服务</text>
+          </svg>
+          <span class="svg-chip"><i></i>TLS 端到端加密 · 身份已认证</span>
+        </div>
+        <div class="scene-txt">
+          <h3>远程访问 · 人在外面，像在办公室</h3>
+          <p>员工在家、出差、在咖啡馆，打开客户端就连进公司内网。所有数据在出设备的那一刻就已加密，公共 Wi-Fi 也不怕被偷看。<strong>特别说明：服务端部署需要公网 IP（或通过内网穿透），但员工终端无需公网 IP 即可顺畅接入。</strong></p>
+          <ul class="scene-list">
+            <li><b>客户端零网络门槛</b>：身处任何复杂网络环境，一键轻松连入，不受 NAT 限制。</li>
+            <li><b>服务端统一管控</b>：只需服务端暴露公网，作为统一的安全防线和资源网关。</li>
+            <li><b>按组分配资源</b>：财务只见财务的系统，外包只见外包的范围。</li>
+            <li>离职即<b>一键停用</b>，权限即刻收回，保障企业数字资产安全。</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- 场景二：异地组网 -->
+      <div class="scene rv">
+        <div class="scene-viz">
+          <svg class="scene-svg" aria-hidden="true" viewBox="0 0 460 250" fill="none">
+            <!-- 组网路径 -->
+            <path class="flow" d="M80 150 C120 100 160 80 230 80" stroke="rgba(96,160,216,.4)" stroke-width="2"/>
+            <path class="flow" d="M380 150 C340 100 300 80 230 80" stroke="rgba(96,160,216,.4)" stroke-width="2"/>
+            <path class="flow" d="M80 150 C180 210 280 210 380 150" stroke="rgba(34,48,42,.12)" stroke-width="1.5"/> <!-- 虚拟直连互通 -->
+            
+            <!-- 光点 -->
+            <circle class="pk v" r="3.5" style="offset-path:path('M80 150 C120 100 160 80 230 80');--fx:80px;--fy:150px"/>
+            <circle class="pk v p2" r="3.5" style="offset-path:path('M380 150 C340 100 300 80 230 80');--fx:380px;--fy:150px"/>
+            
+            <!-- 总部 (中央) -->
+            <g class="ic acc" transform="translate(210 25) scale(1.8)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
+              <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>
+            </g>
+            <text x="230" y="105" text-anchor="middle" fill="#34648f" font-size="12" font-weight="600">中心网关 (总部)</text>
+            <rect x="180" y="115" width="100" height="22" rx="11" fill="rgba(96,160,216,.1)" stroke="rgba(96,160,216,.3)"/>
+            <text x="230" y="130" text-anchor="middle" fill="#2a5275" font-size="11" font-weight="600">必须具备公网 IP</text>
+
+            <!-- 分部 A (左侧) -->
+            <g class="ic" transform="translate(62 108) scale(1.8)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <rect x="5" y="3" width="14" height="18"/><path d="M10 21v-4h4v4"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2"/>
+            </g>
+            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">驻外分部 A</text>
+            <rect x="36" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
+            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11">普通内网宽带</text>
+
+            <!-- 分部 B (右侧) -->
+            <g class="ic" transform="translate(362 108) scale(1.8)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
+              <rect x="5" y="3" width="14" height="18"/><path d="M10 21v-4h4v4"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2"/>
+            </g>
+            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">驻外分部 B</text>
+            <rect x="336" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
+            <text x="380" y="195" text-anchor="middle" class="f-dim" font-size="11">普通内网宽带</text>
+          </svg>
+          <span class="svg-chip v"><i></i>跨站点互通 · 逻辑局域网</span>
+        </div>
+        <div class="scene-txt">
+          <h3>异地组网 · 多个地点，一张内网</h3>
+          <p>总部、分部、驻外点各自连上网关，就像插进了同一台交换机：分部的同事直接访问总部的 ERP，甚至分部之间也能安全互通。<strong>为避免误会：无需所有节点都有公网 IP，只需中心网关（一端）具备公网 IP 即可轻松组网。</strong></p>
+          <ul class="scene-list">
+            <li><b>单端公网即可互通</b>：分支机构处在纯 NAT 内网环境也能无缝接入，网络拓扑高弹性。</li>
+            <li><b>免专线，大幅降本</b>：依靠普通家用宽带即可组网，成本仅为传统物理专线的零头。</li>
+            <li><b>全链路加密安全</b>：站点间访问数据流全程高强度加密，跨公网传输也坚不可摧。</li>
+            <li><b>极简边缘扩展</b>：新增一个偏远驻外点，只需发个客户端配置，分钟级并入企业内网。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ 功能矩阵 ═══ -->
+  <section id="features">
+    <div class="sec-head rv"><span class="sec-no">04 / FEATURES</span></div>
+    <h2 class="rv">一块面板，四路纵深</h2>
+    <p class="sec-sub rv">接入、网络、安全、运维——每一路都做到"点一下就完成"，而不是"学会再动手"。</p>
+
+    <div class="spec glass rv">
+      <div class="spec-col">
+        <h4>ACCESS · 接入管控</h4>
+        <ul>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>用户与分组管理，<b>CSV 批量导入</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>网段与域名资源<b>按组分配</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>在线会话实时查看，<b>一键踢出</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>连接历史追踪，<b>自动长期归档</b></span></li>
+        </ul>
+      </div>
+      <div class="spec-col v">
+        <h4>NETWORK · 网络与流量</h4>
+        <ul>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>接口配置网页化，<b>保存即生效</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>NAT 与静态路由<b>可视化管理</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>域名放行<b>自动跟随 CDN 换 IP</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>流量趋势与排行，<b>实时刷新</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>来源归属地<b>离线库可导入</b>，免联网</span></li>
+        </ul>
+      </div>
+      <div class="spec-col g">
+        <h4>SECURITY · 安全与证书</h4>
+        <ul>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>CA / 服务器 / 客户端证书<b>全生命周期</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>证书到期<b>提前告警</b>，CRL 一键吊销</span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>登录阶梯锁定 + <b>会话 IP 绑定</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>管理员操作<b>全程审计留痕</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>世界 / 中国双地图，<b>威胁来源红色标记</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>全屏大屏<b>长驻展示</b>，独立令牌不超时</span></li>
+        </ul>
+      </div>
+      <div class="spec-col y">
+        <h4>OPS · 运维与备份</h4>
+        <ul>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>备份 <b>AES-256-GCM 加密</b>，可定时</span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>SSH 推送<b>异地留存</b>，一次导入完整归来</span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>邮件 / 飞书 / Telegram，<b>22 类事件告警</b></span></li>
+          <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>中英双语 · <b>明暗双主题</b></span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="band glass rv">
+      <span class="t">SECURITY BASELINE</span>
+      <span>HTTPS 加密访问</span><span>bcrypt 密码存储</span><span>离线授权 · 零遥测</span><span>登录限流与阶梯锁定</span><span>备份防篡改校验</span><span>内部接口仅限本机</span>
+    </div>
+  </section>
+
+  <!-- ═══ FAQ ═══ -->
+  <section id="faq">
+    <div class="sec-head rv"><span class="sec-no">05 / FAQ</span></div>
+    <h2 class="rv">你大概想问的，都在这</h2>
+    <p class="sec-sub rv">没有销售话术，只有直接的答案。</p>
+
+    <div class="faq glass rv">
+      <details>
+        <summary><span class="no">Q1</span>完全离线的内网环境，能装能用吗？<span class="plus">+</span></summary>
+        <p class="a">安装包<b>自带全部依赖组件</b>（含 Go/Node 运行时、ocserv 源码与系统 deb 离线包），安装时按提示选择完全离线安装即可全程无网操作，不改 apt 源、不发起任何联网请求；授权校验同样<b>无需外网</b>。服务器部署后即可断开外网——零遥测，是本产品的底线而非卖点。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q2</span>15 天试用到期后会怎样？<span class="plus">+</span></summary>
+        <p class="a">到期后服务停止对外提供连接，但<b>数据完整保留</b>。导入正式 License 即刻恢复；即便卸载重装，试用进度与激活状态也会自动延续，不会被"洗掉"。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q3</span>改了配置，在线用户会掉线吗？<span class="plus">+</span></summary>
+        <p class="a">不会。绝大多数配置<b>保存即生效且不影响在线会话</b>；需要重启服务的场景，面板会先明确提示，把决定权留给你。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q4</span>域名放行，CDN 换了 IP 怎么办？<span class="plus">+</span></summary>
+        <p class="a">不用管。面板持续解析并<b>自动跟随域名的 IP 变化</b>，规则随动更新。你只需要维护一份域名清单，而不是几百条 IP 规则。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q5</span>态势大屏的地图要联网加载吗？<span class="plus">+</span></summary>
+        <p class="a">不需要。世界与中国地图数据<b>随安装包内置</b>，IP 归属地同样支持导入离线库（ip2region），纯内网环境下地图、排行、路径与全屏大屏全部照常工作。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q6</span>支持哪些系统？对服务器有什么要求？<span class="plus">+</span></summary>
+        <p class="a"><b>Debian / Ubuntu</b>，一行命令完成安装，开机自启动。常规云主机规格即可承载；面板自身资源占用极低，不与业务抢资源。</p>
+      </details>
+      <details>
+        <summary><span class="no">Q7</span>面板本身的安全怎么保证？<span class="plus">+</span></summary>
+        <p class="a">HTTPS 加密访问、bcrypt 密码存储、登录失败阶梯锁定、会话绑定来源 IP、管理员操作全程审计。内部维护接口<b>仅限服务器本机访问</b>，且校验独立令牌。</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ═══ 部署 ═══ -->
+  <section id="deploy">
+    <div class="sec-head rv"><span class="sec-no">06 / DEPLOY</span></div>
+    <h2 class="rv">一行命令，五分钟后上任</h2>
+    <p class="sec-sub rv">环境准备、服务部署、证书配置、安全加固，全部自动完成。</p>
+
+    <div class="deploy-code glass rv">
+      <span class="dollar">$</span>
+      <code id="cmd">bash netglimmer_vpn_install.sh</code>
+      <button class="btn btn-g copy" id="copyBtn" type="button">复制</button>
+    </div>
+    <div class="deploy-notes rv">
+      <span>Debian / Ubuntu</span><span>离线组件<b>自带</b></span><span>开机<b>自启动</b></span><span>HTTPS <b>加密访问</b></span><span>15 天<b>全功能试用</b>，无需注册</span>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap foot">
+  <div class="logo">
+    <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e9d78" stroke-width="2" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
+    Netglimmer VPN Manager
+  </div>
+  让 VPN 管理变得优雅
+  <span>SELF-HOSTED · OFFLINE-FIRST</span>
+</div></footer>
+
+<script>
+// 进场动画（不支持 IntersectionObserver 的环境直接显示）
+(function () {
+  const els = document.querySelectorAll('.rv');
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver(es => es.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    }), { threshold: .12 });
+    els.forEach(el => io.observe(el));
+  } else {
+    els.forEach(el => el.classList.add('on'));
+  }
+})();
+
+// 复制安装命令
+(function () {
+  const btn = document.getElementById('copyBtn');
+  if (!btn) return;
+  let timer = null;
+  const done = () => {
+    btn.textContent = '已复制';
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => { btn.textContent = '复制'; timer = null; }, 1600);
+  };
+  const fallback = t => {
+    const i = document.createElement('textarea');
+    i.value = t; i.setAttribute('readonly', '');
+    i.style.cssText = 'position:fixed;left:-9999px;opacity:0';
+    document.body.appendChild(i); i.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    i.remove(); done();
+  };
+  btn.addEventListener('click', () => {
+    const t = document.getElementById('cmd').textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(done).catch(() => fallback(t));
+    } else fallback(t);
+  });
+})();
+</script>
+</body>
+</html>

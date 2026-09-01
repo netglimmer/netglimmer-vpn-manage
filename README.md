@@ -55,8 +55,9 @@
 
 ```bash
 # Download and extract the release package
-tar xzf netglimmer_vpn_install_v1.7_release.tar.gz
-cd netglimmer_vpn_install_v1.7_release
+wget https://github.com/netglimmer/netglimmer-vpn-manage/archive/refs/heads/main.zip -O netglimmer-vpn-manage.zip
+unzip netglimmer-vpn-manage.zip
+cd netglimmer-vpn-manage-main
 
 # Online mode (auto-detects, will prompt)
 sudo bash netglimmer_vpn_install.sh

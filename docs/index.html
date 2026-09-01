@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Netglimmer VPN Manager — 把 VPN 服务器装进浏览器</title>
-<meta name="description" content="企业级 OpenConnect VPN 一站式管理面板：一键部署、纯离线授权、域名级访问控制、玻璃拟态界面。">
+<title data-i18n="title">Netglimmer VPN Manager — 把 VPN 服务器装进浏览器</title>
+<meta name="description" data-i18n="description" data-i18n-attr="content" content="企业级 OpenConnect VPN 一站式管理面板：一键部署、纯离线授权、域名级访问控制、玻璃拟态界面。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232e9d78' stroke-width='2'%3E%3Cpath d='M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -263,6 +263,13 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
 .rv{opacity:0;transform:translateY(26px);transition:opacity .7s ease, transform .7s ease}
 .rv.on{opacity:1;transform:none}
 
+/* ── 语言切换 ── */
+.lang-toggle{display:inline-flex;align-items:center;gap:0;margin-left:12px;border:1px solid var(--line);border-radius:10px;overflow:hidden;flex-shrink:0}
+.lang-toggle button{padding:5px 12px;font-size:12.5px;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--mut);transition:all .2s;letter-spacing:.04em;line-height:1.4}
+.lang-toggle button:hover{color:var(--ink)}
+.lang-toggle button.active{background:linear-gradient(160deg,rgba(46,157,120,.22),rgba(46,157,120,.1));color:var(--acc);box-shadow:inset 0 1px 0 rgba(255,255,255,.4)}
+.lang-toggle button+button{border-left:1px solid var(--line-soft)}
+
 @media (max-width:960px){
   .hero{grid-template-columns:1fr;padding-top:130px;gap:44px}
   .nav-links{display:none}
@@ -300,6 +307,7 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
 /* ── 小屏手机 ── */
 @media (max-width:640px){
   .hero{padding-top:112px;gap:36px}
+  .nav-in .btn-p{display:none}
   .stats{margin-top:32px}
   .sec-sub{margin-bottom:28px}
   .spec{grid-template-columns:1fr}
@@ -347,9 +355,10 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
     Netglimmer&nbsp;<b>VPN</b>
   </div>
   <nav class="nav-links">
-    <a href="#strengths">核心优势</a><a href="#compare">时代对比</a><a href="#scenarios">应用场景</a><a href="#features">全部功能</a><a href="#faq">问答</a><a href="#deploy">部署</a>
+    <a href="#strengths" data-i18n="nav_strengths">核心优势</a><a href="#compare" data-i18n="nav_compare">时代对比</a><a href="#scenarios" data-i18n="nav_scenarios">应用场景</a><a href="#features" data-i18n="nav_features">全部功能</a><a href="#faq" data-i18n="nav_faq">问答</a><a href="#deploy" data-i18n="nav_deploy">部署</a>
   </nav>
-  <a class="btn btn-p" href="#deploy" style="margin-left:auto">立即体验</a>
+  <div class="lang-toggle" style="margin-left:auto"><button id="langZh" class="active" onclick="setLang('zh')">中</button><button id="langEn" onclick="setLang('en')">EN</button></div>
+  <a class="btn btn-p" href="#deploy" data-i18n="nav_cta" style="margin-left:12px">立即体验</a>
 </div></div></header>
 
 <main class="wrap">
@@ -357,17 +366,17 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
   <section class="hero">
     <div>
       <p class="eyebrow rv">OPENCONNECT · SELF-HOSTED · OFFLINE-FIRST</p>
-      <h1 class="rv">把整台 VPN 服务器，<br>装进<em class="hl">浏览器</em>。</h1>
-      <p class="lede rv">Netglimmer 将 OpenConnect 的完整生命周期——用户、隔离、访问控制、证书、流量、备份——收进一块通透的玻璃面板。你只需要点击，剩下的交给它。</p>
+      <h1 class="rv" data-i18n="hero_title">把整台 VPN 服务器，<br>装进<em class="hl">浏览器</em>。</h1>
+      <p class="lede rv" data-i18n="hero_lede">Netglimmer 将 OpenConnect 的完整生命周期——用户、隔离、访问控制、证书、流量、备份——收进一块通透的玻璃面板。你只需要点击，剩下的交给它。</p>
       <div class="cta-row rv">
-        <a class="btn btn-p" href="#deploy">一行命令部署</a>
-        <a class="btn btn-g" href="#strengths">看看它强在哪</a>
+        <a class="btn btn-p" href="#deploy" data-i18n="hero_cta1">一行命令部署</a>
+        <a class="btn btn-g" href="#strengths" data-i18n="hero_cta2">看看它强在哪</a>
       </div>
       <ul class="stats rv">
-        <li><b>1</b><span>行命令完成部署</span></li>
-        <li><b>15</b><span>天全功能免费试用</span></li>
-        <li><b>100%</b><span>离线授权 · 零上报</span></li>
-        <li><b>2</b><span>种语言 · 明暗双主题</span></li>
+        <li><b>1</b><span data-i18n="hero_stat1">行命令完成部署</span></li>
+        <li><b>15</b><span data-i18n="hero_stat2">天全功能免费试用</span></li>
+        <li><b>100%</b><span data-i18n="hero_stat3">离线授权 · 零上报</span></li>
+        <li><b>2</b><span data-i18n="hero_stat4">种语言 · 明暗双主题</span></li>
       </ul>
     </div>
 
@@ -375,77 +384,77 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
       <div class="mock glass">
         <div class="mock-bar"><i></i><i></i><i></i><span>NETGLIMMER CONSOLE · LIVE</span></div>
         <div class="mock-stats">
-          <div class="ms"><small>在线用户</small><b class="up">12</b></div>
-          <div class="ms"><small>今日流量</small><b>86.4<span style="font-size:12px;color:var(--dim)"> GB</span></b></div>
+          <div class="ms"><small data-i18n="mock_online">在线用户</small><b class="up">12</b></div>
+          <div class="ms"><small data-i18n="mock_traffic">今日流量</small><b>86.4<span style="font-size:12px;color:var(--dim)"> GB</span></b></div>
         </div>
         <svg class="spark" aria-hidden="true" viewBox="0 0 260 64" preserveAspectRatio="none">
           <defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(46,157,120,.28)"/><stop offset="1" stop-color="rgba(46,157,120,0)"/></linearGradient></defs>
           <path class="fill" d="M0 46 C20 42 30 30 46 32 S76 50 96 44 126 18 146 22 176 40 196 30 236 10 260 16 V64 H0 Z"/>
           <path vector-effect="non-scaling-stroke" d="M0 46 C20 42 30 30 46 32 S76 50 96 44 126 18 146 22 176 40 196 30 236 10 260 16"/>
         </svg>
-        <div class="row"><span class="dot"></span><span class="name">chen.yu</span><span class="grp">财务组</span><span class="bar"><i style="width:72%"></i></span><span class="traf">31.2 GB</span></div>
-        <div class="row"><span class="dot"></span><span class="name">lin.mo</span><span class="grp">研发组</span><span class="bar"><i style="width:45%"></i></span><span class="traf">18.7 GB</span></div>
-        <div class="row"><span class="dot"></span><span class="name">zhao.ke</span><span class="grp">外部顾问</span><span class="bar"><i style="width:22%"></i></span><span class="traf">6.1 GB</span></div>
+        <div class="row"><span class="dot"></span><span class="name">chen.yu</span><span class="grp" data-i18n="mock_grp1">财务组</span><span class="bar"><i style="width:72%"></i></span><span class="traf">31.2 GB</span></div>
+        <div class="row"><span class="dot"></span><span class="name">lin.mo</span><span class="grp" data-i18n="mock_grp2">研发组</span><span class="bar"><i style="width:45%"></i></span><span class="traf">18.7 GB</span></div>
+        <div class="row"><span class="dot"></span><span class="name">zhao.ke</span><span class="grp" data-i18n="mock_grp3">外部顾问</span><span class="bar"><i style="width:22%"></i></span><span class="traf">6.1 GB</span></div>
       </div>
-      <div class="chip c1 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3aa86f" stroke-width="2.4" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg>域名放行 · www.baidu.com 已生效</div>
-      <div class="chip c2 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a0d8" stroke-width="2.2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21h4"/></svg>证书 30 天后到期 · 已通知</div>
+      <div class="chip c1 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3aa86f" stroke-width="2.4" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span data-i18n="mock_chip1">域名放行 · www.baidu.com 已生效</span></div>
+      <div class="chip c2 glass"><svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#60a0d8" stroke-width="2.2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21h4"/></svg><span data-i18n="mock_chip2">证书 30 天后到期 · 已通知</span></div>
     </div>
   </section>
 
   <!-- ═══ 核心优势 ═══ -->
   <section id="strengths">
     <div class="sec-head rv"><span class="sec-no">01 / STRENGTHS</span></div>
-    <h2 class="rv">优势，是它唯一的说明书</h2>
-    <p class="sec-sub rv">不谈架构、不堆参数。以下每一条，都是你选择它的理由。</p>
+    <h2 class="rv" data-i18n="s_title">优势，是它唯一的说明书</h2>
+    <p class="sec-sub rv" data-i18n="s_sub">不谈架构、不堆参数。以下每一条，都是你选择它的理由。</p>
 
     <div class="bento">
       <div class="card s7 glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 12a7 7 0 0114 0"/><path d="M2 12h3M19 12h3"/><rect x="9" y="12" width="6" height="9" rx="2"/></svg></div>
-        <h3>从部署到授权，全程离线</h3>
-        <p>安装包自带全部组件，授权校验无需联网。内网、隔离环境、边缘节点，同样一键落地——你的服务器，不向任何人"打电话"。</p>
-        <div class="tags"><span>一行安装</span><span>离线授权</span><span>零遥测</span><span>内网友好</span></div>
+        <h3 data-i18n="s1_title">从部署到授权，全程离线</h3>
+        <p data-i18n="s1_desc">安装包自带全部组件，授权校验无需联网。内网、隔离环境、边缘节点，同样一键落地——你的服务器，不向任何人"打电话"。</p>
+        <div class="tags" data-i18n="s1_tags"><span>一行安装</span><span>离线授权</span><span>零遥测</span><span>内网友好</span></div>
       </div>
 
       <div class="card s5 v glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></div>
-        <h3>443 端口，隐形于日常</h3>
-        <p>主动探测者看到的只是一个普通网站；只有带着暗号的访问者，才敲得开 VPN 的门。隐蔽，是面板上的一个开关。</p>
-        <div class="tags"><span>服务伪装</span><span>暗号接入</span></div>
+        <h3 data-i18n="s2_title">443 端口，隐形于日常</h3>
+        <p data-i18n="s2_desc">主动探测者看到的只是一个普通网站；只有带着暗号的访问者，才敲得开 VPN 的门。隐蔽，是面板上的一个开关。</p>
+        <div class="tags" data-i18n="s2_tags"><span>服务伪装</span><span>暗号接入</span></div>
       </div>
 
       <div class="card s5 glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/></svg></div>
-        <h3>域名智能放行</h3>
-        <p>写下域名，访问控制即刻生效；CDN 如何轮换 IP，都自动跟随。不维护清单，不重写规则。</p>
-        <div class="tags"><span>按域名管控</span><span>IP 自动跟随</span></div>
+        <h3 data-i18n="s3_title">域名智能放行</h3>
+        <p data-i18n="s3_desc">写下域名，访问控制即刻生效；CDN 如何轮换 IP，都自动跟随。不维护清单，不重写规则。</p>
+        <div class="tags" data-i18n="s3_tags"><span>按域名管控</span><span>IP 自动跟随</span></div>
       </div>
 
       <div class="card s7 v glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-8M22 20H2"/></svg></div>
-        <h3>流量与连接，一目了然</h3>
-        <p>趋势、排行、每一次连接的细节，长期自动归档。谁在用、用了多少、何时在用——不用猜，看一眼就知道。</p>
+        <h3 data-i18n="s4_title">流量与连接，一目了然</h3>
+        <p data-i18n="s4_desc">趋势、排行、每一次连接的细节，长期自动归档。谁在用、用了多少、何时在用——不用猜，看一眼就知道。</p>
         <div class="mini-bars"><i style="height:34%"></i><i style="height:58%"></i><i style="height:42%"></i><i style="height:76%"></i><i style="height:60%"></i><i style="height:92%"></i><i style="height:70%"></i></div>
       </div>
 
       <div class="card s8 g glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg></div>
-        <h3>加密备份，异地安心</h3>
-        <p>备份可加密、可定时、可推送到千里之外的另一台机器。灾难来临时，一次导入，完整归来。</p>
-        <div class="tags"><span>AES-256 加密</span><span>每日自动</span><span>SSH 异地推送</span></div>
+        <h3 data-i18n="s5_title">加密备份，异地安心</h3>
+        <p data-i18n="s5_desc">备份可加密、可定时、可推送到千里之外的另一台机器。灾难来临时，一次导入，完整归来。</p>
+        <div class="tags" data-i18n="s5_tags"><span>AES-256 加密</span><span>每日自动</span><span>SSH 异地推送</span></div>
       </div>
 
       <div class="card s4 glass rv">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M10 21h4"/></svg></div>
-        <h3>告警，不隔夜</h3>
-        <p>邮件、飞书与 Telegram 三通道，从暴力破解到证书到期，22 类事件实时送达。</p>
-        <div class="tags"><span>邮件</span><span>飞书</span><span>Telegram</span><span>22 类事件</span></div>
+        <h3 data-i18n="s6_title">告警，不隔夜</h3>
+        <p data-i18n="s6_desc">邮件、飞书与 Telegram 三通道，从暴力破解到证书到期，22 类事件实时送达。</p>
+        <div class="tags" data-i18n="s6_tags"><span>邮件</span><span>飞书</span><span>Telegram</span><span>22 类事件</span></div>
       </div>
 
       <div class="card glass rv" style="grid-column:span 12">
         <div class="ico"><svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18-3-4-3-14.5 0-18z"/><circle cx="16" cy="9" r="1.6" fill="currentColor" stroke="none"/></svg></div>
-        <h3>全球态势，一张地图</h3>
-        <p>连接来自哪些国家、谁是常客、谁在反复叩门——世界与中国双视图热力呈现，来源到服务器的路径一目了然；登录失败与封禁来源，红色一眼锁定。一键开启全屏大屏，独立令牌长驻展示，挂在指挥中心屏幕上不超时。</p>
-        <div class="tags"><span>离线地图</span><span>世界 / 中国双视图</span><span>全屏大屏</span><span>服务器位置标注</span><span>威胁标记</span></div>
+        <h3 data-i18n="s7_title">全球态势，一张地图</h3>
+        <p data-i18n="s7_desc">连接来自哪些国家、谁是常客、谁在反复叩门——世界与中国双视图热力呈现，来源到服务器的路径一目了然；登录失败与封禁来源，红色一眼锁定。一键开启全屏大屏，独立令牌长驻展示，挂在指挥中心屏幕上不超时。</p>
+        <div class="tags" data-i18n="s7_tags"><span>离线地图</span><span>世界 / 中国双视图</span><span>全屏大屏</span><span>服务器位置标注</span><span>威胁标记</span></div>
       </div>
     </div>
   </section>
@@ -453,25 +462,25 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
   <!-- ═══ 对比 ═══ -->
   <section id="compare">
     <div class="sec-head rv"><span class="sec-no">02 / CONTRAST</span></div>
-    <h2 class="rv">同一件事，两个时代</h2>
-    <p class="sec-sub rv">没有贬低命令行的意思——只是你的时间，值得花在别处。</p>
+    <h2 class="rv" data-i18n="c_title">同一件事，两个时代</h2>
+    <p class="sec-sub rv" data-i18n="c_sub">没有贬低命令行的意思——只是你的时间，值得花在别处。</p>
 
     <div class="cmp glass rv">
-      <div class="cmp-row cmp-head"><span>命令行时代</span><span></span><span class="n">NETGLIMMER 时代</span></div>
-      <div class="cmp-row"><span class="cmp-old">ssh 上去，ocpasswd 加用户，祈祷别敲错</span><span class="cmp-arrow">──▶</span><span class="cmp-new">网页三下点击，CSV 批量导入也支持</span></div>
-      <div class="cmp-row"><span class="cmp-old">occtl show users 看谁在线</span><span class="cmp-arrow">──▶</span><span class="cmp-new">实时列表自动刷新，一键踢出</span></div>
-      <div class="cmp-row"><span class="cmp-old">手写 iptables，改错就断网</span><span class="cmp-arrow">──▶</span><span class="cmp-new">可视化规则，命中计数实时可见</span></div>
-      <div class="cmp-row"><span class="cmp-old">背 openssl 参数签证书</span><span class="cmp-arrow">──▶</span><span class="cmp-new">网页填表签发，一键下载</span></div>
-      <div class="cmp-row"><span class="cmp-old">改配置、重启服务、等用户投诉</span><span class="cmp-arrow">──▶</span><span class="cmp-new">表单保存即生效，在线用户不掉线</span></div>
-      <div class="cmp-row"><span class="cmp-old">交接运维？先教会他 Linux</span><span class="cmp-arrow">──▶</span><span class="cmp-new">给他一个浏览器地址就够了</span></div>
+      <div class="cmp-row cmp-head"><span data-i18n="c_head_old">命令行时代</span><span></span><span class="n" data-i18n="c_head_new">NETGLIMMER 时代</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c1_old">ssh 上去，ocpasswd 加用户，祈祷别敲错</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c1_new">网页三下点击，CSV 批量导入也支持</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c2_old">occtl show users 看谁在线</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c2_new">实时列表自动刷新，一键踢出</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c3_old">手写 iptables，改错就断网</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c3_new">可视化规则，命中计数实时可见</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c4_old">背 openssl 参数签证书</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c4_new">网页填表签发，一键下载</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c5_old">改配置、重启服务、等用户投诉</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c5_new">表单保存即生效，在线用户不掉线</span></div>
+      <div class="cmp-row"><span class="cmp-old" data-i18n="c6_old">交接运维？先教会他 Linux</span><span class="cmp-arrow">──▶</span><span class="cmp-new" data-i18n="c6_new">给他一个浏览器地址就够了</span></div>
     </div>
   </section>
 
   <!-- ═══ 应用场景 ═══ -->
   <section id="scenarios">
     <div class="sec-head rv"><span class="sec-no">03 / SCENARIOS</span></div>
-    <h2 class="rv">它解决的，是这两种日常</h2>
-    <p class="sec-sub rv">不需要懂深奥的网络原理，看图就好：明确的公网接入点，加密的数据流向。</p>
+    <h2 class="rv" data-i18n="sc_title">它解决的，是这两种日常</h2>
+    <p class="sec-sub rv" data-i18n="sc_sub">不需要懂深奥的网络原理，看图就好：明确的公网接入点，加密的数据流向。</p>
 
     <div class="scenes">
       <!-- 场景一：远程访问 -->
@@ -490,30 +499,30 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
             <g class="ic" transform="translate(62 105) scale(1.6)" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
               <rect x="4" y="5" width="16" height="11" rx="2"/><path d="M2 19h20"/>
             </g>
-            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">家庭/移动办公</text>
+            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600" data-i18n="svg_remote">家庭/移动办公</text>
             <rect x="36" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
-            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11">无需公网 IP</text>
+            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11" data-i18n="svg_no_pubip">无需公网 IP</text>
 
             <!-- 网关服务器 (中央) -->
             <g class="ic acc" transform="translate(210 25) scale(1.8)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
               <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>
             </g>
-            <text x="230" y="105" text-anchor="middle" class="f-acc" font-size="12" font-weight="600">NETGLIMMER 网关</text>
+            <text x="230" y="105" text-anchor="middle" class="f-acc" font-size="12" font-weight="600" data-i18n="svg_gw1">NETGLIMMER 网关</text>
             <rect x="180" y="115" width="100" height="22" rx="11" fill="rgba(46,157,120,.1)" stroke="rgba(46,157,120,.3)"/>
-            <text x="230" y="130" text-anchor="middle" fill="#1e7a52" font-size="11" font-weight="600">必须具备公网 IP</text>
+            <text x="230" y="130" text-anchor="middle" fill="#1e7a52" font-size="11" font-weight="600" data-i18n="svg_need_pubip">必须具备公网 IP</text>
 
             <!-- 公司内网 (右侧) -->
             <g class="ic" transform="translate(362 108) scale(1.6)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
               <rect x="4" y="4" width="16" height="6" rx="1.5"/><rect x="4" y="14" width="16" height="6" rx="1.5"/><path d="M8 7h.01M8 17h.01"/>
             </g>
-            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">企业内网服务</text>
+            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600" data-i18n="svg_internal">企业内网服务</text>
           </svg>
-          <span class="svg-chip"><i></i>TLS 端到端加密 · 身份已认证</span>
+          <span class="svg-chip"><i></i><span data-i18n="svg_chip1">TLS 端到端加密 · 身份已认证</span></span>
         </div>
         <div class="scene-txt">
-          <h3>远程访问 · 人在外面，像在办公室</h3>
-          <p>员工在家、出差、在咖啡馆，打开客户端就连进公司内网。所有数据在出设备的那一刻就已加密，公共 Wi-Fi 也不怕被偷看。<strong>特别说明：服务端部署需要公网 IP（或通过内网穿透），但员工终端无需公网 IP 即可顺畅接入。</strong></p>
-          <ul class="scene-list">
+          <h3 data-i18n="sc1_title">远程访问 · 人在外面，像在办公室</h3>
+          <p data-i18n="sc1_desc">员工在家、出差、在咖啡馆，打开客户端就连进公司内网。所有数据在出设备那一刻就已加密，公共 Wi-Fi 也不怕被偷看。<strong>特别说明：服务端部署需要公网 IP（或通过内网穿透），但员工终端无需公网 IP 即可顺畅接入。</strong></p>
+          <ul class="scene-list" data-i18n="sc1_list">
             <li><b>客户端零网络门槛</b>：身处任何复杂网络环境，一键轻松连入，不受 NAT 限制。</li>
             <li><b>服务端统一管控</b>：只需服务端暴露公网，作为统一的安全防线和资源网关。</li>
             <li><b>按组分配资源</b>：财务只见财务的系统，外包只见外包的范围。</li>
@@ -539,32 +548,32 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
             <g class="ic acc" transform="translate(210 25) scale(1.8)" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round">
               <path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/><path d="M9 12l2 2 4-4" stroke-linecap="round"/>
             </g>
-            <text x="230" y="105" text-anchor="middle" fill="#34648f" font-size="12" font-weight="600">中心网关 (总部)</text>
+            <text x="230" y="105" text-anchor="middle" fill="#34648f" font-size="12" font-weight="600" data-i18n="svg_hq">中心网关 (总部)</text>
             <rect x="180" y="115" width="100" height="22" rx="11" fill="rgba(96,160,216,.1)" stroke="rgba(96,160,216,.3)"/>
-            <text x="230" y="130" text-anchor="middle" fill="#2a5275" font-size="11" font-weight="600">必须具备公网 IP</text>
+            <text x="230" y="130" text-anchor="middle" fill="#2a5275" font-size="11" font-weight="600" data-i18n="svg_need_pubip2">必须具备公网 IP</text>
 
             <!-- 分部 A (左侧) -->
             <g class="ic" transform="translate(62 108) scale(1.8)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
               <rect x="5" y="3" width="14" height="18"/><path d="M10 21v-4h4v4"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2"/>
             </g>
-            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">驻外分部 A</text>
+            <text x="80" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600" data-i18n="svg_branch_a">驻外分部 A</text>
             <rect x="36" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
-            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11">普通内网宽带</text>
+            <text x="80" y="195" text-anchor="middle" class="f-dim" font-size="11" data-i18n="svg_broadband">普通内网宽带</text>
 
             <!-- 分部 B (右侧) -->
             <g class="ic" transform="translate(362 108) scale(1.8)" stroke="currentColor" stroke-width="1.4" stroke-linecap="round">
               <rect x="5" y="3" width="14" height="18"/><path d="M10 21v-4h4v4"/><path d="M9 7h2M13 7h2M9 11h2M13 11h2"/>
             </g>
-            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600">驻外分部 B</text>
+            <text x="380" y="170" text-anchor="middle" class="f-mut" font-size="12" font-weight="600" data-i18n="svg_branch_b">驻外分部 B</text>
             <rect x="336" y="180" width="88" height="22" rx="11" fill="rgba(34,48,42,.05)" stroke="rgba(34,48,42,.15)"/>
-            <text x="380" y="195" text-anchor="middle" class="f-dim" font-size="11">普通内网宽带</text>
+            <text x="380" y="195" text-anchor="middle" class="f-dim" font-size="11" data-i18n="svg_broadband2">普通内网宽带</text>
           </svg>
-          <span class="svg-chip v"><i></i>跨站点互通 · 逻辑局域网</span>
+          <span class="svg-chip v"><i></i><span data-i18n="svg_chip2">跨站点互通 · 逻辑局域网</span></span>
         </div>
         <div class="scene-txt">
-          <h3>异地组网 · 多个地点，一张内网</h3>
-          <p>总部、分部、驻外点各自连上网关，就像插进了同一台交换机：分部的同事直接访问总部的 ERP，甚至分部之间也能安全互通。<strong>为避免误会：无需所有节点都有公网 IP，只需中心网关（一端）具备公网 IP 即可轻松组网。</strong></p>
-          <ul class="scene-list">
+          <h3 data-i18n="sc2_title">异地组网 · 多个地点，一张内网</h3>
+          <p data-i18n="sc2_desc">总部、分部、驻外点各自连上网关，就像插进了同一台交换机：分部的同事直接访问总部的 ERP，甚至分部之间也能安全互通。<strong>为避免误会：无需所有节点都有公网 IP，只需中心网关（一端）具备公网 IP 即可轻松组网。</strong></p>
+          <ul class="scene-list" data-i18n="sc2_list">
             <li><b>单端公网即可互通</b>：分支机构处在纯 NAT 内网环境也能无缝接入，网络拓扑高弹性。</li>
             <li><b>免专线，大幅降本</b>：依靠普通家用宽带即可组网，成本仅为传统物理专线的零头。</li>
             <li><b>全链路加密安全</b>：站点间访问数据流全程高强度加密，跨公网传输也坚不可摧。</li>
@@ -578,13 +587,13 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
   <!-- ═══ 功能矩阵 ═══ -->
   <section id="features">
     <div class="sec-head rv"><span class="sec-no">04 / FEATURES</span></div>
-    <h2 class="rv">一块面板，四路纵深</h2>
-    <p class="sec-sub rv">接入、网络、安全、运维——每一路都做到"点一下就完成"，而不是"学会再动手"。</p>
+    <h2 class="rv" data-i18n="f_title">一块面板，四路纵深</h2>
+    <p class="sec-sub rv" data-i18n="f_sub">接入、网络、安全、运维——每一路都做到"点一下就完成"，而不是"学会再动手"。</p>
 
     <div class="spec glass rv">
       <div class="spec-col">
-        <h4>ACCESS · 接入管控</h4>
-        <ul>
+        <h4 data-i18n="f1_head">ACCESS · 接入管控</h4>
+        <ul data-i18n="f1_items">
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>用户与分组管理，<b>CSV 批量导入</b></span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>网段与域名资源<b>按组分配</b></span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>在线会话实时查看，<b>一键踢出</b></span></li>
@@ -592,8 +601,8 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
         </ul>
       </div>
       <div class="spec-col v">
-        <h4>NETWORK · 网络与流量</h4>
-        <ul>
+        <h4 data-i18n="f2_head">NETWORK · 网络与流量</h4>
+        <ul data-i18n="f2_items">
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>接口配置网页化，<b>保存即生效</b></span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>NAT 与静态路由<b>可视化管理</b></span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>域名放行<b>自动跟随 CDN 换 IP</b></span></li>
@@ -602,8 +611,8 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
         </ul>
       </div>
       <div class="spec-col g">
-        <h4>SECURITY · 安全与证书</h4>
-        <ul>
+        <h4 data-i18n="f3_head">SECURITY · 安全与证书</h4>
+        <ul data-i18n="f3_items">
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>CA / 服务器 / 客户端证书<b>全生命周期</b></span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>证书到期<b>提前告警</b>，CRL 一键吊销</span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>登录阶梯锁定 + <b>会话 IP 绑定</b></span></li>
@@ -613,8 +622,8 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
         </ul>
       </div>
       <div class="spec-col y">
-        <h4>OPS · 运维与备份</h4>
-        <ul>
+        <h4 data-i18n="f4_head">OPS · 运维与备份</h4>
+        <ul data-i18n="f4_items">
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>备份 <b>AES-256-GCM 加密</b>，可定时</span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>SSH 推送<b>异地留存</b>，一次导入完整归来</span></li>
           <li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>邮件 / 飞书 / Telegram，<b>22 类事件告警</b></span></li>
@@ -625,44 +634,44 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
 
     <div class="band glass rv">
       <span class="t">SECURITY BASELINE</span>
-      <span>HTTPS 加密访问</span><span>bcrypt 密码存储</span><span>离线授权 · 零遥测</span><span>登录限流与阶梯锁定</span><span>备份防篡改校验</span><span>内部接口仅限本机</span>
+      <span data-i18n="sb1">HTTPS 加密访问</span><span data-i18n="sb2">bcrypt 密码存储</span><span data-i18n="sb3">离线授权 · 零遥测</span><span data-i18n="sb4">登录限流与阶梯锁定</span><span data-i18n="sb5">备份防篡改校验</span><span data-i18n="sb6">内部接口仅限本机</span>
     </div>
   </section>
 
   <!-- ═══ FAQ ═══ -->
   <section id="faq">
     <div class="sec-head rv"><span class="sec-no">05 / FAQ</span></div>
-    <h2 class="rv">你大概想问的，都在这</h2>
-    <p class="sec-sub rv">没有销售话术，只有直接的答案。</p>
+    <h2 class="rv" data-i18n="faq_title">你大概想问的，都在这</h2>
+    <p class="sec-sub rv" data-i18n="faq_sub">没有销售话术，只有直接的答案。</p>
 
     <div class="faq glass rv">
       <details>
-        <summary><span class="no">Q1</span>完全离线的内网环境，能装能用吗？<span class="plus">+</span></summary>
-        <p class="a">安装包<b>自带全部依赖组件</b>（含 Go/Node 运行时、ocserv 源码与系统 deb 离线包），安装时按提示选择完全离线安装即可全程无网操作，不改 apt 源、不发起任何联网请求；授权校验同样<b>无需外网</b>。服务器部署后即可断开外网——零遥测，是本产品的底线而非卖点。</p>
+        <summary><span class="no">Q1</span><span data-i18n="faq1_q">完全离线的内网环境，能装能用吗？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq1_a">安装包<b>自带全部依赖组件</b>（含 Go/Node 运行时、ocserv 源码与系统 deb 离线包），安装时按提示选择完全离线安装即可全程无网操作，不改 apt 源、不发起任何联网请求；授权校验同样<b>无需外网</b>。服务器部署后即可断开外网——零遥测，是本产品的底线而非卖点。</p>
       </details>
       <details>
-        <summary><span class="no">Q2</span>15 天试用到期后会怎样？<span class="plus">+</span></summary>
-        <p class="a">到期后服务停止对外提供连接，但<b>数据完整保留</b>。导入正式 License 即刻恢复；即便卸载重装，试用进度与激活状态也会自动延续，不会被"洗掉"。</p>
+        <summary><span class="no">Q2</span><span data-i18n="faq2_q">15 天试用到期后会怎样？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq2_a">到期后服务停止对外提供连接，但<b>数据完整保留</b>。导入正式 License 即刻恢复；即便卸载重装，试用进度与激活状态也会自动延续，不会被"洗掉"。</p>
       </details>
       <details>
-        <summary><span class="no">Q3</span>改了配置，在线用户会掉线吗？<span class="plus">+</span></summary>
-        <p class="a">不会。绝大多数配置<b>保存即生效且不影响在线会话</b>；需要重启服务的场景，面板会先明确提示，把决定权留给你。</p>
+        <summary><span class="no">Q3</span><span data-i18n="faq3_q">改了配置，在线用户会掉线吗？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq3_a">不会。绝大多数配置<b>保存即生效且不影响在线会话</b>；需要重启服务的场景，面板会先明确提示，把决定权留给你。</p>
       </details>
       <details>
-        <summary><span class="no">Q4</span>域名放行，CDN 换了 IP 怎么办？<span class="plus">+</span></summary>
-        <p class="a">不用管。面板持续解析并<b>自动跟随域名的 IP 变化</b>，规则随动更新。你只需要维护一份域名清单，而不是几百条 IP 规则。</p>
+        <summary><span class="no">Q4</span><span data-i18n="faq4_q">域名放行，CDN 换了 IP 怎么办？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq4_a">不用管。面板持续解析并<b>自动跟随域名的 IP 变化</b>，规则随动更新。你只需要维护一份域名清单，而不是几百条 IP 规则。</p>
       </details>
       <details>
-        <summary><span class="no">Q5</span>态势大屏的地图要联网加载吗？<span class="plus">+</span></summary>
-        <p class="a">不需要。世界与中国地图数据<b>随安装包内置</b>，IP 归属地同样支持导入离线库（ip2region），纯内网环境下地图、排行、路径与全屏大屏全部照常工作。</p>
+        <summary><span class="no">Q5</span><span data-i18n="faq5_q">态势大屏的地图要联网加载吗？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq5_a">不需要。世界与中国地图数据<b>随安装包内置</b>，IP 归属地同样支持导入离线库（ip2region），纯内网环境下地图、排行、路径与全屏大屏全部照常工作。</p>
       </details>
       <details>
-        <summary><span class="no">Q6</span>支持哪些系统？对服务器有什么要求？<span class="plus">+</span></summary>
-        <p class="a"><b>Debian / Ubuntu</b>，一行命令完成安装，开机自启动。常规云主机规格即可承载；面板自身资源占用极低，不与业务抢资源。</p>
+        <summary><span class="no">Q6</span><span data-i18n="faq6_q">支持哪些系统？对服务器有什么要求？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq6_a"><b>Debian / Ubuntu</b>，一行命令完成安装，开机自启动。常规云主机规格即可承载；面板自身资源占用极低，不与业务抢资源。</p>
       </details>
       <details>
-        <summary><span class="no">Q7</span>面板本身的安全怎么保证？<span class="plus">+</span></summary>
-        <p class="a">HTTPS 加密访问、bcrypt 密码存储、登录失败阶梯锁定、会话绑定来源 IP、管理员操作全程审计。内部维护接口<b>仅限服务器本机访问</b>，且校验独立令牌。</p>
+        <summary><span class="no">Q7</span><span data-i18n="faq7_q">面板本身的安全怎么保证？</span><span class="plus">+</span></summary>
+        <p class="a" data-i18n="faq7_a">HTTPS 加密访问、bcrypt 密码存储、登录失败阶梯锁定、会话绑定来源 IP、管理员操作全程审计。内部维护接口<b>仅限服务器本机访问</b>，且校验独立令牌。</p>
       </details>
     </div>
   </section>
@@ -670,16 +679,16 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
   <!-- ═══ 部署 ═══ -->
   <section id="deploy">
     <div class="sec-head rv"><span class="sec-no">06 / DEPLOY</span></div>
-    <h2 class="rv">一行命令，五分钟后上任</h2>
-    <p class="sec-sub rv">环境准备、服务部署、证书配置、安全加固，全部自动完成。</p>
+    <h2 class="rv" data-i18n="d_title">一行命令，五分钟后上任</h2>
+    <p class="sec-sub rv" data-i18n="d_sub">环境准备、服务部署、证书配置、安全加固，全部自动完成。</p>
 
     <div class="deploy-code glass rv">
       <span class="dollar">$</span>
       <code id="cmd">bash netglimmer_vpn_install.sh</code>
-      <button class="btn btn-g copy" id="copyBtn" type="button">复制</button>
+      <button class="btn btn-g copy" id="copyBtn" type="button" data-i18n="d_copy">复制</button>
     </div>
     <div class="deploy-notes rv">
-      <span>Debian / Ubuntu</span><span>离线组件<b>自带</b></span><span>开机<b>自启动</b></span><span>HTTPS <b>加密访问</b></span><span>15 天<b>全功能试用</b>，无需注册</span>
+      <span>Debian / Ubuntu</span><span data-i18n="d_note1">离线组件<b>自带</b></span><span data-i18n="d_note2">开机<b>自启动</b></span><span data-i18n="d_note3">HTTPS <b>加密访问</b></span><span data-i18n="d_note4">15 天<b>全功能试用</b>，无需注册</span>
     </div>
   </section>
 </main>
@@ -689,7 +698,7 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
     <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#2e9d78" stroke-width="2" stroke-linejoin="round"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6z"/></svg>
     Netglimmer VPN Manager
   </div>
-  让 VPN 管理变得优雅
+  <span data-i18n="foot_slogan">让 VPN 管理变得优雅</span>
   <span>SELF-HOSTED · OFFLINE-FIRST</span>
 </div></footer>
 
@@ -713,9 +722,10 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
   if (!btn) return;
   let timer = null;
   const done = () => {
-    btn.textContent = '已复制';
+    var L = typeof _curLang !== 'undefined' ? _curLang : 'zh';
+    btn.textContent = L === 'zh' ? '已复制' : 'Copied';
     if (timer) clearTimeout(timer);
-    timer = setTimeout(() => { btn.textContent = '复制'; timer = null; }, 1600);
+    timer = setTimeout(() => { btn.textContent = L === 'zh' ? '复制' : 'Copy'; timer = null; }, 1600);
   };
   const fallback = t => {
     const i = document.createElement('textarea');
@@ -731,6 +741,177 @@ footer{border-top:1px solid var(--line-soft);margin-top:60px;padding:36px 0 44px
       navigator.clipboard.writeText(t).then(done).catch(() => fallback(t));
     } else fallback(t);
   });
+})();
+</script>
+
+<script>
+// ── i18n 中英文切换 ──
+var _i18n = {
+zh: {
+  title:'Netglimmer VPN Manager \u2014 把 VPN 服务器装进浏览器',
+  description:'企业级 OpenConnect VPN 一站式管理面板：一键部署、纯离线授权、域名级访问控制、玻璃拟态界面。',
+  nav_strengths:'核心优势',nav_compare:'时代对比',nav_scenarios:'应用场景',nav_features:'全部功能',nav_faq:'问答',nav_deploy:'部署',nav_cta:'立即体验',
+  hero_title:'把整台 VPN 服务器，<br>装进<em class="hl">浏览器</em>。',
+  hero_lede:'Netglimmer 将 OpenConnect 的完整生命周期——用户、隔离、访问控制、证书、流量、备份——收进一块通透的玻璃面板。你只需要点击，剩下的交给它。',
+  hero_cta1:'一行命令部署',hero_cta2:'看看它强在哪',
+  hero_stat1:'行命令完成部署',hero_stat2:'天全功能免费试用',hero_stat3:'离线授权 · 零上报',hero_stat4:'种语言 · 明暗双主题',
+  mock_online:'在线用户',mock_traffic:'今日流量',mock_grp1:'财务组',mock_grp2:'研发组',mock_grp3:'外部顾问',
+  mock_chip1:'域名放行 · www.baidu.com 已生效',mock_chip2:'证书 30 天后到期 · 已通知',
+  s_title:'优势，是它唯一的说明书',s_sub:'不谈架构、不堆参数。以下每一条，都是你选择它的理由。',
+  s1_title:'从部署到授权，全程离线',s1_desc:'安装包自带全部组件，授权校验无需联网。内网、隔离环境、边缘节点，同样一键落地——你的服务器，不向任何人\u201c打电话\u201d。',
+  s1_tags:'<span>一行安装</span><span>离线授权</span><span>零遥测</span><span>内网友好</span>',
+  s2_title:'443 端口，隐形于日常',s2_desc:'主动探测者看到的只是一个普通网站；只有带着暗号的访问者，才敲得开 VPN 的门。隐蔽，是面板上的一个开关。',
+  s2_tags:'<span>服务伪装</span><span>暗号接入</span>',
+  s3_title:'域名智能放行',s3_desc:'写下域名，访问控制即刻生效；CDN 如何轮换 IP，都自动跟随。不维护清单，不重写规则。',
+  s3_tags:'<span>按域名管控</span><span>IP 自动跟随</span>',
+  s4_title:'流量与连接，一目了然',s4_desc:'趋势、排行、每一次连接的细节，长期自动归档。谁在用、用了多少、何时在用——不用猜，看一眼就知道。',
+  s5_title:'加密备份，异地安心',s5_desc:'备份可加密、可定时、可推送到千里之外的另一台机器。灾难来临时，一次导入，完整归来。',
+  s5_tags:'<span>AES-256 加密</span><span>每日自动</span><span>SSH 异地推送</span>',
+  s6_title:'告警，不隔夜',s6_desc:'邮件、飞书与 Telegram 三通道，从暴力破解到证书到期，22 类事件实时送达。',
+  s6_tags:'<span>邮件</span><span>飞书</span><span>Telegram</span><span>22 类事件</span>',
+  s7_title:'全球态势，一张地图',s7_desc:'连接来自哪些国家、谁是常客、谁在反复叩门——世界与中国双视图热力呈现，来源到服务器的路径一目了然；登录失败与封禁来源，红色一眼锁定。一键开启全屏大屏，独立令牌长驻展示，挂在指挥中心屏幕上不超时。',
+  s7_tags:'<span>离线地图</span><span>世界 / 中国双视图</span><span>全屏大屏</span><span>服务器位置标注</span><span>威胁标记</span>',
+  c_title:'同一件事，两个时代',c_sub:'没有贬低命令行的意思——只是你的时间，值得花在别处。',
+  c_head_old:'命令行时代',c_head_new:'NETGLIMMER 时代',
+  c1_old:'ssh 上去，ocpasswd 加用户，祈祷别敲错',c1_new:'网页三下点击，CSV 批量导入也支持',
+  c2_old:'occtl show users 看谁在线',c2_new:'实时列表自动刷新，一键踢出',
+  c3_old:'手写 iptables，改错就断网',c3_new:'可视化规则，命中计数实时可见',
+  c4_old:'背 openssl 参数签证书',c4_new:'网页填表签发，一键下载',
+  c5_old:'改配置、重启服务、等用户投诉',c5_new:'表单保存即生效，在线用户不掉线',
+  c6_old:'交接运维？先教会他 Linux',c6_new:'给他一个浏览器地址就够了',
+  sc_title:'它解决的，是这两种日常',sc_sub:'不需要懂深奥的网络原理，看图就好：明确的公网接入点，加密的数据流向。',
+  sc1_title:'远程访问 · 人在外面，像在办公室',
+  sc1_desc:'员工在家、出差、在咖啡馆，打开客户端就连进公司内网。所有数据在出设备那一刻就已加密，公共 Wi-Fi 也不怕被偷看。<strong>特别说明：服务端部署需要公网 IP（或通过内网穿透），但员工终端无需公网 IP 即可顺畅接入。</strong>',
+  sc1_list:'<li><b>客户端零网络门槛</b>：身处任何复杂网络环境，一键轻松连入，不受 NAT 限制。</li><li><b>服务端统一管控</b>：只需服务端暴露公网，作为统一的安全防线和资源网关。</li><li><b>按组分配资源</b>：财务只见财务的系统，外包只见外包的范围。</li><li>离职即<b>一键停用</b>，权限即刻收回，保障企业数字资产安全。</li>',
+  sc2_title:'异地组网 · 多个地点，一张内网',
+  sc2_desc:'总部、分部、驻外点各自连上网关，就像插进了同一台交换机：分部的同事直接访问总部的 ERP，甚至分部之间也能安全互通。<strong>为避免误会：无需所有节点都有公网 IP，只需中心网关（一端）具备公网 IP 即可轻松组网。</strong>',
+  sc2_list:'<li><b>单端公网即可互通</b>：分支机构处在纯 NAT 内网环境也能无缝接入，网络拓扑高弹性。</li><li><b>免专线，大幅降本</b>：依靠普通家用宽带即可组网，成本仅为传统物理专线的零头。</li><li><b>全链路加密安全</b>：站点间访问数据流全程高强度加密，跨公网传输也坚不可摧。</li><li><b>极简边缘扩展</b>：新增一个偏远驻外点，只需发个客户端配置，分钟级并入企业内网。</li>',
+  svg_remote:'家庭/移动办公',svg_no_pubip:'无需公网 IP',svg_gw1:'NETGLIMMER 网关',svg_need_pubip:'必须具备公网 IP',svg_internal:'企业内网服务',
+  svg_chip1:'TLS 端到端加密 · 身份已认证',svg_chip2:'跨站点互通 · 逻辑局域网',
+  svg_hq:'中心网关 (总部)',svg_need_pubip2:'必须具备公网 IP',svg_branch_a:'驻外分部 A',svg_branch_b:'驻外分部 B',svg_broadband:'普通内网宽带',svg_broadband2:'普通内网宽带',
+  f_title:'一块面板，四路纵深',f_sub:'接入、网络、安全、运维——每一路都做到\u201c点一下就完成\u201d，而不是\u201c学会再动手\u201d。',
+  f1_head:'ACCESS · 接入管控',
+  f1_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>用户与分组管理，<b>CSV 批量导入</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>网段与域名资源<b>按组分配</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>在线会话实时查看，<b>一键踢出</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>连接历史追踪，<b>自动长期归档</b></span></li>',
+  f2_head:'NETWORK · 网络与流量',
+  f2_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>接口配置网页化，<b>保存即生效</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>NAT 与静态路由<b>可视化管理</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>域名放行<b>自动跟随 CDN 换 IP</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>流量趋势与排行，<b>实时刷新</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>来源归属地<b>离线库可导入</b>，免联网</span></li>',
+  f3_head:'SECURITY · 安全与证书',
+  f3_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>CA / 服务器 / 客户端证书<b>全生命周期</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>证书到期<b>提前告警</b>，CRL 一键吊销</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>登录阶梯锁定 + <b>会话 IP 绑定</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>管理员操作<b>全程审计留痕</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>世界 / 中国双地图，<b>威胁来源红色标记</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>全屏大屏<b>长驻展示</b>，独立令牌不超时</span></li>',
+  f4_head:'OPS · 运维与备份',
+  f4_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>备份 <b>AES-256-GCM 加密</b>，可定时</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>SSH 推送<b>异地留存</b>，一次导入完整归来</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>邮件 / 飞书 / Telegram，<b>22 类事件告警</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>中英双语 · <b>明暗双主题</b></span></li>',
+  sb1:'HTTPS 加密访问',sb2:'bcrypt 密码存储',sb3:'离线授权 · 零遥测',sb4:'登录限流与阶梯锁定',sb5:'备份防篡改校验',sb6:'内部接口仅限本机',
+  faq_title:'你大概想问的，都在这',faq_sub:'没有销售话术，只有直接的答案。',
+  faq1_q:'完全离线的内网环境，能装能用吗？',faq1_a:'安装包<b>自带全部依赖组件</b>（含 Go/Node 运行时、ocserv 源码与系统 deb 离线包），安装时按提示选择完全离线安装即可全程无网操作，不改 apt 源、不发起任何联网请求；授权校验同样<b>无需外网</b>。服务器部署后即可断开外网——零遥测，是本产品的底线而非卖点。',
+  faq2_q:'15 天试用到期后会怎样？',faq2_a:'到期后服务停止对外提供连接，但<b>数据完整保留</b>。导入正式 License 即刻恢复；即便卸载重装，试用进度与激活状态也会自动延续，不会被\u201c洗掉\u201d。',
+  faq3_q:'改了配置，在线用户会掉线吗？',faq3_a:'不会。绝大多数配置<b>保存即生效且不影响在线会话</b>；需要重启服务的场景，面板会先明确提示，把决定权留给你。',
+  faq4_q:'域名放行，CDN 换了 IP 怎么办？',faq4_a:'不用管。面板持续解析并<b>自动跟随域名的 IP 变化</b>，规则随动更新。你只需要维护一份域名清单，而不是几百条 IP 规则。',
+  faq5_q:'态势大屏的地图要联网加载吗？',faq5_a:'不需要。世界与中国地图数据<b>随安装包内置</b>，IP 归属地同样支持导入离线库（ip2region），纯内网环境下地图、排行、路径与全屏大屏全部照常工作。',
+  faq6_q:'支持哪些系统？对服务器有什么要求？',faq6_a:'<b>Debian / Ubuntu</b>，一行命令完成安装，开机自启动。常规云主机规格即可承载；面板自身资源占用极低，不与业务抢资源。',
+  faq7_q:'面板本身的安全怎么保证？',faq7_a:'HTTPS 加密访问、bcrypt 密码存储、登录失败阶梯锁定、会话绑定来源 IP、管理员操作全程审计。内部维护接口<b>仅限服务器本机访问</b>，且校验独立令牌。',
+  d_title:'一行命令，五分钟后上任',d_sub:'环境准备、服务部署、证书配置、安全加固，全部自动完成。',
+  d_copy:'复制',d_note1:'离线组件<b>自带</b>',d_note2:'开机<b>自启动</b>',d_note3:'HTTPS <b>加密访问</b>',d_note4:'15 天<b>全功能试用</b>，无需注册',
+  foot_slogan:'让 VPN 管理变得优雅'
+},
+en: {
+  title:'Netglimmer VPN Manager \u2014 VPN Server in Your Browser',
+  description:'Enterprise-grade OpenConnect VPN all-in-one management panel: one-click deployment, pure offline licensing, domain-level access control, glassmorphism UI.',
+  nav_strengths:'Strengths',nav_compare:'Contrast',nav_scenarios:'Scenarios',nav_features:'Features',nav_faq:'FAQ',nav_deploy:'Deploy',nav_cta:'Get Started',
+  hero_title:'An Entire VPN Server,<br>Inside a <em class="hl">Browser</em>.',
+  hero_lede:'Netglimmer wraps the full OpenConnect lifecycle \u2014 users, isolation, access control, certificates, traffic, backups \u2014 into one crystal-clear glass panel. You click; it handles the rest.',
+  hero_cta1:'One Command Deploy',hero_cta2:'See Why It\'s Better',
+  hero_stat1:'command to deploy',hero_stat2:'days full-feature trial',hero_stat3:'offline license \u00b7 zero telemetry',hero_stat4:'languages \u00b7 dual themes',
+  mock_online:'Online Users',mock_traffic:'Today\'s Traffic',mock_grp1:'Finance',mock_grp2:'Dev Team',mock_grp3:'Consultant',
+  mock_chip1:'Domain Pass \u00b7 www.baidu.com Active',mock_chip2:'Cert Expires in 30d \u00b7 Notified',
+  s_title:'Its Strengths Speak for Themselves',s_sub:'No jargon, no parameter dumps. Every point below is a reason to choose it.',
+  s1_title:'Fully Offline, Deploy to License',s1_desc:'The package ships every component; license verification needs no internet. Air-gapped networks, isolated environments, edge nodes \u2014 one-click deploy. Your server never \u201cphones home.\u201d',
+  s1_tags:'<span>One-line Install</span><span>Offline License</span><span>Zero Telemetry</span><span>Air-gap Ready</span>',
+  s2_title:'Port 443, Invisible by Default',s2_desc:'Probes see an ordinary website; only visitors with the right signal find the VPN door. Stealth is just a toggle on the panel.',
+  s2_tags:'<span>Service Camouflage</span><span>Secret Knock</span>',
+  s3_title:'Smart Domain Pass-through',s3_desc:'Type a domain, access control takes effect instantly; CDN IP rotation is tracked automatically. No IP lists to maintain, no rules to rewrite.',
+  s3_tags:'<span>Domain-based Control</span><span>Auto IP Tracking</span>',
+  s4_title:'Traffic & Connections at a Glance',s4_desc:'Trends, rankings, every connection detail \u2014 auto-archived long-term. Who\'s using, how much, when \u2014 no guessing, just look.',
+  s5_title:'Encrypted Backups, Peace of Mind',s5_desc:'Backups can be encrypted, scheduled, and pushed to a machine thousands of miles away. When disaster strikes, one import brings everything back.',
+  s5_tags:'<span>AES-256 Encryption</span><span>Daily Auto</span><span>SSH Remote Push</span>',
+  s6_title:'Alerts, Delivered Instantly',s6_desc:'Email, Feishu, and Telegram triple-channel \u2014 from brute-force detection to certificate expiry, 22 event types delivered in real time.',
+  s6_tags:'<span>Email</span><span>Feishu</span><span>Telegram</span><span>22 Event Types</span>',
+  s7_title:'Global Situational Awareness',s7_desc:'Where connections originate, who\'s frequent, who\'s knocking repeatedly \u2014 world and China dual-view heat maps with source-to-server paths at a glance; failed logins and banned sources flagged in red. One-click full-screen big-screen mode with independent persistent token.',
+  s7_tags:'<span>Offline Maps</span><span>World / China Dual View</span><span>Full-screen Dashboard</span><span>Server Location</span><span>Threat Markers</span>',
+  c_title:'Same Tasks, Two Eras',c_sub:'Nothing against the command line \u2014 but your time deserves better.',
+  c_head_old:'The CLI Era',c_head_new:'The NETGLIMMER Era',
+  c1_old:'SSH in, ocpasswd to add users, pray for no typos',c1_new:'Three web clicks; CSV bulk import supported',
+  c2_old:'occtl show users to check who\'s online',c2_new:'Real-time list, auto-refresh, one-click kick',
+  c3_old:'Hand-write iptables, one typo kills the network',c3_new:'Visual rules with real-time hit counters',
+  c4_old:'Memorize openssl params to sign certs',c4_new:'Web form to issue, one-click download',
+  c5_old:'Change config, restart service, wait for complaints',c5_new:'Save and apply instantly, online users stay connected',
+  c6_old:'Hand over ops? Teach them Linux first',c6_new:'Just give them a browser URL',
+  sc_title:'Solving Two Everyday Scenarios',sc_sub:'No deep networking degree needed \u2014 just look at the diagrams: clear public endpoints, encrypted data flows.',
+  sc1_title:'Remote Access \u00b7 Work Anywhere, Like the Office',
+  sc1_desc:'Employees at home, on the road, or in a cafe \u2014 open the client and connect to the corporate network. All data is encrypted the moment it leaves the device; public Wi-Fi is no threat. <strong>Note: the server needs a public IP (or tunneling), but client devices need none.</strong>',
+  sc1_list:'<li><b>Zero client network hurdles</b>: connect effortlessly from any network environment, free from NAT constraints.</li><li><b>Centralized server control</b>: only the server exposes public access as a unified security gateway.</li><li><b>Group-based resources</b>: finance sees only finance systems; contractors see only their scope.</li><li>Offboarding? <b>One-click disable</b>, permissions revoked instantly.</li>',
+  sc2_title:'Multi-site Networking \u00b7 Many Locations, One Intranet',
+  sc2_desc:'HQ, branches, and remote offices each connect to the gateway as if plugging into the same switch: branches access HQ\'s ERP directly, even cross-branch communication is secure. <strong>To be clear: not every node needs a public IP \u2014 only the central gateway (one end) requires one.</strong>',
+  sc2_list:'<li><b>One-end public IP is enough</b>: branches behind pure NAT connect seamlessly with flexible topology.</li><li><b>No dedicated lines, huge savings</b>: ordinary broadband suffices, a fraction of traditional leased-line costs.</li><li><b>Full-link encryption</b>: inter-site traffic is encrypted end-to-end, secure even across public networks.</li><li><b>Effortless edge expansion</b>: add a remote office by sending a client config \u2014 onboarded in minutes.</li>',
+  svg_remote:'Home / Mobile Office',svg_no_pubip:'No Public IP Needed',svg_gw1:'NETGLIMMER Gateway',svg_need_pubip:'Public IP Required',svg_internal:'Corporate Network',
+  svg_chip1:'TLS End-to-End \u00b7 Authenticated',svg_chip2:'Cross-site Link \u00b7 Virtual LAN',
+  svg_hq:'Central Gateway (HQ)',svg_need_pubip2:'Public IP Required',svg_branch_a:'Branch Office A',svg_branch_b:'Branch Office B',svg_broadband:'Standard Broadband',svg_broadband2:'Standard Broadband',
+  f_title:'One Panel, Four Pillars',f_sub:'Access, Network, Security, Ops \u2014 each pillar is \u201cjust click it,\u201d not \u201clearn it first.\u201d',
+  f1_head:'ACCESS \u00b7 Access Control',
+  f1_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>User & group management, <b>CSV bulk import</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Subnet & domain resources <b>assigned by group</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Real-time online sessions, <b>one-click kick</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Connection history, <b>auto long-term archive</b></span></li>',
+  f2_head:'NETWORK \u00b7 Network & Traffic',
+  f2_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Web-based interface config, <b>save & apply</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>NAT & static routes <b>visual management</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Domain pass-through <b>auto-follows CDN IPs</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Traffic trends & rankings, <b>live refresh</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Source geolocation <b>offline DB import</b></span></li>',
+  f3_head:'SECURITY \u00b7 Security & Certs',
+  f3_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>CA / server / client certs <b>full lifecycle</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Cert expiry <b>early warning</b>, CRL one-click revoke</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Login step-lock + <b>session IP binding</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Admin actions <b>fully audited</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>World / China dual maps, <b>threat sources in red</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Full-screen <b>persistent display</b>, independent token</span></li>',
+  f4_head:'OPS \u00b7 Ops & Backup',
+  f4_items:'<li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Backup <b>AES-256-GCM encrypted</b>, schedulable</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>SSH push <b>remote retention</b>, one import full restore</span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Email / Feishu / Telegram, <b>22 event types</b></span></li><li><svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 12l5 5L20 6"/></svg><span>Bilingual \u00b7 <b>dual themes</b></span></li>',
+  sb1:'HTTPS Encrypted Access',sb2:'bcrypt Password Storage',sb3:'Offline License \u00b7 Zero Telemetry',sb4:'Rate Limiting & Step Lock',sb5:'Tamper-proof Backup Verification',sb6:'Localhost-only Internal API',
+  faq_title:'Everything You Probably Wanted to Ask',faq_sub:'No sales pitch \u2014 just straight answers.',
+  faq1_q:'Can it work in a fully offline, air-gapped environment?',faq1_a:'The package <b>ships all dependencies</b> (including Go/Node runtimes, ocserv source, and system deb offline packages). Choose fully offline during install for zero network operations \u2014 no apt source changes, no outbound requests; license verification also <b>requires no internet</b>. Disconnect after deploy \u2014 zero telemetry is our baseline, not a selling point.',
+  faq2_q:'What happens after the 15-day trial expires?',faq2_a:'The service stops accepting connections, but <b>all data is preserved</b>. Import a valid License to resume instantly; even after uninstall/reinstall, trial progress and activation status carry over \u2014 they won\'t be \u201cwiped.\u201d',
+  faq3_q:'Will changing config disconnect online users?',faq3_a:'No. Most configs <b>take effect on save without affecting active sessions</b>; for scenarios requiring a restart, the panel prompts you first, leaving the decision to you.',
+  faq4_q:'What if CDN rotates the IP of an allowed domain?',faq4_a:'Don\'t worry. The panel continuously resolves and <b>auto-tracks domain IP changes</b>, updating rules dynamically. You maintain a domain list, not hundreds of IP rules.',
+  faq5_q:'Do the situational awareness maps need internet to load?',faq5_a:'No. World and China map data is <b>bundled with the package</b>; IP geolocation also supports offline DB import (ip2region). Maps, rankings, paths, and full-screen dashboards all work perfectly offline.',
+  faq6_q:'Which systems are supported? What are the server requirements?',faq6_a:'<b>Debian / Ubuntu</b>, one command to install, auto-starts on boot. Standard cloud VM specs suffice; the panel uses minimal resources and won\'t compete with your workload.',
+  faq7_q:'How is the panel itself secured?',faq7_a:'HTTPS encrypted access, bcrypt password storage, login failure step-locking, session IP binding, full admin audit trail. Internal maintenance APIs are <b>localhost-only</b> and require a separate token.',
+  d_title:'One Command, Five Minutes to Go Live',d_sub:'Environment prep, service deployment, certificate setup, security hardening \u2014 all automated.',
+  d_copy:'Copy',d_note1:'Offline Components <b>Included</b>',d_note2:'Auto-start <b>on Boot</b>',d_note3:'HTTPS <b>Encrypted Access</b>',d_note4:'15-Day <b>Full Trial</b>, No Sign-up',
+  foot_slogan:'Making VPN Management Elegant'
+}
+};
+// HTML 内容集合（使用 innerHTML 而非 textContent）
+var _htmlKeys = ['hero_title','s1_tags','s2_tags','s3_tags','s5_tags','s6_tags','s7_tags','sc1_desc','sc1_list','sc2_desc','sc2_list','f1_items','f2_items','f3_items','f4_items','faq1_a','faq2_a','faq3_a','faq4_a','faq5_a','faq6_a','faq7_a','d_note1','d_note2','d_note3','d_note4'];
+var _curLang = 'zh';
+function applyLang(lang) {
+  var dict = _i18n[lang]; if (!dict) return;
+  // title & meta
+  var t = document.querySelector('title[data-i18n]');
+  if (t) t.textContent = dict.title || t.textContent;
+  var m = document.querySelector('meta[data-i18n-attr="content"]');
+  if (m && dict.description) m.setAttribute('content', dict.description);
+  // body elements
+  var els = document.querySelectorAll('[data-i18n]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i], key = el.getAttribute('data-i18n');
+    if (key === 'title' || key === 'description') continue;
+    if (dict[key] !== undefined) {
+      if (_htmlKeys.indexOf(key) !== -1) el.innerHTML = dict[key];
+      else el.textContent = dict[key];
+    }
+  }
+  // copy 按钮回调文本
+  var cb = document.getElementById('copyBtn');
+  if (cb && cb.textContent !== '\u5df2\u590d\u5236' && cb.textContent !== 'Copied') cb.textContent = dict.d_copy || (lang === 'zh' ? '\u590d\u5236' : 'Copy');
+  // 切换按钮状态
+  var z = document.getElementById('langZh'), e = document.getElementById('langEn');
+  if (z && e) { z.classList.toggle('active', lang === 'zh'); e.classList.toggle('active', lang === 'en'); }
+  // html lang
+  document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+  _curLang = lang;
+}
+window.setLang = function(lang) { try { localStorage.setItem('ng_lang', lang); } catch(e){} applyLang(lang); };
+// 初始化
+(function() {
+  var saved = 'zh';
+  try { saved = localStorage.getItem('ng_lang') || (navigator.language.indexOf('zh') === 0 ? 'zh' : 'en'); } catch(e) { saved = 'zh'; }
+  applyLang(saved);
 })();
 </script>
 </body>

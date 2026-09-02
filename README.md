@@ -3,7 +3,8 @@
 > Enterprise-grade OpenConnect VPN management panel with real-time monitoring, situational awareness, and one-click deployment.
 
 **Netglimmer** is a commercial VPN management solution built on top of [ocserv](https://ocserv.gitlab.io/www/ocserv.html) (OpenConnect VPN server). It provides a modern web-based administration panel with comprehensive features for user management, real-time monitoring, certificate management, and more.
-[中文介绍](README.md).
+
+[中文介绍](README_CN.md).
 
 ![Version](https://img.shields.io/badge/version-1.7-blue)
 ![Platform](https://img.shields.io/badge/platform-Debian%20%7C%20Ubuntu-lightgrey)

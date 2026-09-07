@@ -1343,9 +1343,15 @@ generate_certificates() {
     mkdir -p /etc/ocserv/ssl
     cd /etc/ocserv/ssl
 
-    certtool --generate-privkey --outfile ca-key.pem 2>/dev/null
+    # 已有 CA 证书时跳过 CA 重建，避免重装使已签发客户端证书失效
+    if [ -f "ca-cert.pem" ] && [ -f "ca-key.pem" ]; then
+        binfo "Existing CA found, skipping CA regeneration" "检测到已有 CA 证书，跳过 CA 重建"
+    else
+        if ! certtool --generate-privkey --outfile ca-key.pem; then
+            berror "Failed to generate CA private key" "生成 CA 私钥失败"; return 1
+        fi
 
-    cat > ca.tmpl <<EOF
+        cat > ca.tmpl <<EOF
 cn = "Netglimmer VPN CA"
 organization = "Netglimmer"
 serial = 1
@@ -1355,10 +1361,19 @@ signing_key
 cert_signing_key
 crl_signing_key
 EOF
-    certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem 2>/dev/null
+        if ! certtool --generate-self-signed --load-privkey ca-key.pem --template ca.tmpl --outfile ca-cert.pem; then
+            berror "Failed to generate CA certificate" "生成 CA 证书失败"; return 1
+        fi
+    fi
 
-    certtool --generate-privkey --outfile server-key.pem 2>/dev/null
+    if ! certtool --generate-privkey --outfile server-key.pem; then
+        berror "Failed to generate server private key" "生成服务端私钥失败"; return 1
+    fi
 
+    # server.tmpl：SAN 必须与地址类型匹配，且只写一条。
+    # 域名写 dns_name；IPv4 写 ip_address（域名写进 ip_address 会让 certtool 直接失败）。
+    # 反过来给 IP 地址塞 dns_name 虽不报错，却会产出一个无意义的 SAN 干扰客户端校验。
+    # 判定正则与 is_valid_address 保持一致（每段 1-3 位数字）。
     cat > server.tmpl <<EOF
 cn = "${SERVER_ADDRESS}"
 organization = "Netglimmer"
@@ -1367,12 +1382,18 @@ expiration_days = 3650
 signing_key
 encryption_key
 tls_www_server
-dns_name = "${SERVER_ADDRESS}"
-ip_address = "${SERVER_ADDRESS}"
 EOF
-    certtool --generate-certificate --load-privkey server-key.pem \
+    if [[ "$SERVER_ADDRESS" =~ ^[0-9]{1,3}(\.[0-9]{1,3}){3}$ ]]; then
+        echo "ip_address = ${SERVER_ADDRESS}" >> server.tmpl
+    else
+        echo "dns_name = \"${SERVER_ADDRESS}\"" >> server.tmpl
+    fi
+
+    if ! certtool --generate-certificate --load-privkey server-key.pem \
         --load-ca-certificate ca-cert.pem --load-ca-privkey ca-key.pem \
-        --template server.tmpl --outfile server-cert.pem 2>/dev/null
+        --template server.tmpl --outfile server-cert.pem; then
+        berror "Failed to generate server certificate" "生成服务端证书失败"; return 1
+    fi
 
     chmod 600 ca-key.pem server-key.pem
     chmod 644 ca-cert.pem server-cert.pem
@@ -1387,8 +1408,10 @@ EOF
 crl_next_update = 365
 crl_number = $(date +%s)
 EOF
-    certtool --generate-crl --load-ca-privkey ca-key.pem \
-        --load-ca-certificate ca-cert.pem --template crl.tmpl --outfile crl.pem 2>/dev/null
+    if ! certtool --generate-crl --load-ca-privkey ca-key.pem \
+        --load-ca-certificate ca-cert.pem --template crl.tmpl --outfile crl.pem; then
+        berror "Failed to generate initial CRL" "生成初始 CRL 失败"; return 1
+    fi
     rm -f crl.tmpl
 
     bsuccess "SSL certificates generated" "SSL 证书生成完成"
@@ -1435,7 +1458,7 @@ isolate-workers = ${ISOLATE_WORKERS}
 max-clients = 128
 max-same-clients = 3
 
-keepalive = 240
+keepalive = 60
 dpd = 120
 mobile-dpd = 120
 switch-to-tcp-timeout = 30
@@ -1444,9 +1467,9 @@ mobile-idle-timeout = 0
 
 tls-priorities = "NORMAL:%SERVER_PRECEDENCE:%COMPAT:-RSA:-VERS-SSL3.0:-ARCFOUR-128"
 
-auth-timeout = 240
+auth-timeout = 40
 cookie-timeout = 300
-rekey-time = 172800
+rekey-time = 86400
 rekey-method = ssl
 
 use-occtl = true

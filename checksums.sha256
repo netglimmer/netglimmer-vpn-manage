@@ -3,9 +3,9 @@
 6c2bd3e83f74ab96bbbc4f10dfe143492dce9b7ebcf51d27e67cf6bb533b82f1  ./README.md
 3e396cc0befdcaddd217b81e561e1a18673a8e7d1187abe68578b2965db36c1f  ./connect.sh
 9584cfe55c007d39d5f5e1034abd980b1944182d845e4f9e65baff314acd7352  ./disconnect.sh
-beaf96a878278f4441333ef8cbb97ccebd0161887eba88622940933affcf9144  ./netglimmer_vpn_install.sh
+53743f3b6674618ce7ea522e385a51a6d108505d9e4a48917c7a3b311eff0c59  ./netglimmer_vpn_install.sh
 42ced08958b9576ab134fcb7bdc7f8df5e13214fd147855f99021fedcf0eedbe  ./ocserv-1.5.0.tar.xz
-b23597d1b66e5e33b6b093de7db0eaa45dd8e3f8da04aab78034896d66fb9626  ./ocserv-manager
+c5cac71f9c3f073383b956b952890674dc3d06e395f3f22be123e9b8a9181177  ./ocserv-manager
 b913d3190431d80b7abee3ddb837ce2b833d0f7c3f4d5f582a8362f154b85a1f  ./offline-debs/PACK_INFO
 ab314134f43a0891a48f69a9bc33d825da748fa5e0ba2bebb7a5c491b026f1a0  ./offline-debs/binutils-common_2.40-2_amd64.deb
 2d7ea8a570d768224d7f2424abbe6f373d2154865a1fa7f56c80d43ecf492521  ./offline-debs/binutils-x86-64-linux-gnu_2.40-2_amd64.deb

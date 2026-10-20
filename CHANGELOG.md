@@ -14,7 +14,7 @@ This file documents the versioning policy and indexes releases.
 |:--|:--|
 | **MAJOR** | 不兼容变更：数据库结构不向后兼容、发布包目录结构调整、授权格式变更 |
 | **MINOR** | 向后兼容的功能新增（新页面、新通知渠道、新策略能力） |
-| **PATCH** | 向后兼容的缺陷修复、安装脚本健壮性修补、文档更正 |
+| **PATCH** | 向后兼容的缺陷修复、内置安装器健壮性修补、文档更正 |
 
 发布包命名：
 
@@ -27,7 +27,7 @@ netglimmer_vpn_install_v<版本>_core_linux-amd64.tar.xz    核心包（不含�
 
 - 替换 `ocserv-manager` 二进制 + `systemctl restart ocserv-manager` 即完成升级，**授权、用户数据、证书与配置全部保留**。
 - 数据库为增量迁移（`CREATE TABLE IF NOT EXISTS` + 容错列补齐），旧库可直接被新版本读取。
-- 跨 MAJOR 升级前请先在面板「配置备份」导出一次 ZIP，或直接用安装脚本重装（自带快照与自动回退）。
+- 跨 MAJOR 升级前请先在面板「配置备份」导出一次 ZIP，或直接用内置安装器重装（`sudo ./ocserv-manager install`，自带快照与自动回退）。
 
 ## 版本索引 / Releases
 

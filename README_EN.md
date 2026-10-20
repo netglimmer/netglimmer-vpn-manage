@@ -18,12 +18,12 @@
 
 ---
 
-Netglimmer wraps [ocserv](https://ocserv.gitlab.io/www/ocserv.html) (OpenConnect / Cisco AnyConnect-compatible VPN) into a **single-binary, offline-deployable product with a web console**: 26 functional pages covering accounts, network policy, certificates, situational awareness and backups, plus an installer that turns a clean Debian/Ubuntu box into a working VPN gateway — and rolls itself back if it fails.
+Netglimmer wraps [ocserv](https://ocserv.gitlab.io/www/ocserv.html) (OpenConnect / Cisco AnyConnect-compatible VPN) into a **single-binary, offline-deployable product with a web console**: 26 functional pages covering accounts, network policy, certificates, situational awareness and backups, plus a built-in installer that turns a clean Debian/Ubuntu box into a working VPN gateway — and rolls itself back if it fails.
 
 | | |
 |:--|--|
-| **Delivery** | One 15 MB prebuilt binary (frontend embedded) + one 3,060-line installer + offline deps |
-| **Runtime deps** | ocserv, nginx, dnsmasq, iptables/ipset — all installed by the script |
+| **Delivery** | One 15 MB prebuilt binary (frontend, installer / ops scripts and session hooks all embedded) + offline deps (full bundle only) |
+| **Runtime deps** | ocserv, nginx, dnsmasq, iptables/ipset — all installed by the built-in installer |
 | **Network need** | Install and runtime can be **fully air-gapped**; offline maps, GeoIP database and licensing are built in |
 | **Admin entry** | Browser HTTPS panel (default `:8443`); backend binds `127.0.0.1:8088` only |
 
@@ -90,7 +90,7 @@ The public **[Releases](https://github.com/netglimmer/netglimmer-vpn-manage/rele
 
 | Asset | Size | Contents | How to get it |
 |:--|:--|:--|:--|
-| `netglimmer_vpn_install_v1.8_core_linux-amd64.tar.xz` | ~5 MB | Panel binary (**installer embedded inside**) + ocserv source, no system debs | Public Release download |
+| `netglimmer_vpn_install_v1.8_core_linux-amd64.tar.xz` | ~5 MB | Panel binary (**installer / ops scripts embedded inside**) + ocserv source, no system debs | Public Release download |
 | `SHA256SUMS.txt` | < 1 KB | SHA256 of the public assets | Public Release download |
 | `netglimmer_vpn_install_v1.8_linux-amd64.tar.xz` | ~124 MB | Core contents + `offline-debs/` (196 .deb files) | **Not public**: air-gapped customers request it from the supplier, with its own manifest |
 
@@ -229,7 +229,7 @@ sequenceDiagram
 
 - Machine binding: fingerprint hashed from `/etc/machine-id` + `product_uuid` + CPU model; a `.lic` is invalid on another host
 - The verification public key is **compiled into the binary**, so swapping a key file cannot forge a license
-- Local trial state is HMAC-signed with a per-deployment key generated randomly at first build (`/etc/.nglickey`, `0600`) — not hardcoded in source
+- Local trial state is HMAC-signed with a master key generated randomly **on the target at install time** (`/etc/.nglickey`, `0600`) and mirrored to the ESP partition so it survives an OS reinstall — neither hardcoded in source nor shipped inside the binary
 - Clock-rollback defense: a high-water mark records the furthest-seen time; winding the clock back is treated as tampering and handled as expiry
 - On expiry: an enforcer ticks every minute and stops `ocserv` while blocked; the panel stays reachable and redirects to `/activate`, and importing a valid license brings the service back
 
@@ -274,10 +274,11 @@ netglimmer_vpn_install_release/
 <summary><b>Common commands</b></summary>
 
 ```bash
-systemctl status ocserv ocserv-manager nginx dnsmasq   # service state
-journalctl -u ocserv -f                                # live VPN log
-sudo ./ocserv-manager manage                         # interactive ops menu (users/bans/resources/groups/reset password/export backup)
-sudo ./ocserv-manager uninstall               # uninstall
+systemctl status ocserv ocserv-manager nginx dnsmasq    # service state
+journalctl -u ocserv -f                                 # live VPN log
+sudo ./ocserv-manager manage                            # interactive ops menu (install/uninstall/users/groups/resources/services/bans/reset password/export backup)
+sudo ./ocserv-manager uninstall                         # uninstall
+sudo ./ocserv-manager --extract-scripts /tmp/ng-scripts  # troubleshooting: extract the embedded installer and session hooks
 ```
 
 </details>
@@ -285,7 +286,7 @@ sudo ./ocserv-manager uninstall               # uninstall
 <details>
 <summary><b>Lost admin password</b></summary>
 
-Prefer the installer menu item "Reset admin password" (sets it to `netglimmer` and invalidates all sessions). In an emergency, write the hash directly:
+Prefer the ops menu: `sudo ./ocserv-manager manage` → option `9` to reset the admin password (sets it to `netglimmer` and invalidates all sessions). In an emergency, write the hash directly:
 
 ```bash
 /opt/ocserv-manager/ocserv-manager --hash-password 'new-password'      # bcrypt hash, no network needed
@@ -330,10 +331,13 @@ Offline session records older than 90 days are archived into monthly CSVs and re
 The panel defaults to **8443**, not 443 (443 is the VPN port). Check your security group / upstream firewall for the panel port, and `systemctl status nginx ocserv-manager`.
 
 **My target machine has no internet at all. Can it still install?**
-Yes. Use the full package with `--offline`: system deps from local debs, ocserv compiled from the bundled source, panel as a prebuilt binary (frontend embedded — no Node/npm involved). Zero outbound traffic.
+Yes. Use the full package with `--offline`: system deps from local debs, ocserv compiled from the bundled source, panel as a prebuilt binary (frontend and installer embedded — no Node/npm involved). Zero outbound traffic.
+
+**Why is there no `.sh` installer in the package?**
+The installer, uninstaller, ops menu and ocserv session hooks are compiled into `ocserv-manager` in compressed form: `sudo ./ocserv-manager install` extracts them to a 0700 temp dir, runs them and removes them when done. To review or debug them, run `sudo ./ocserv-manager --extract-scripts <dir>` — the extracted scripts behave exactly as if you ran them with `bash` yourself.
 
 **What about Ubuntu or ARM64?**
-`offline-debs/` is bound to distro version and architecture — regenerate it with `ocserv-manager pack-offline-debs` on a matching connected machine. ARM64 additionally needs a source-mode panel build (the prebuilt binary is amd64).
+`offline-debs/` is bound to distro version and architecture — regenerate it with `sudo ./ocserv-manager pack-offline-debs` on a matching connected machine. ARM64 additionally needs a source-mode panel build (the prebuilt binary is amd64).
 
 **What happens when the license expires?**
 The VPN service is stopped automatically within a minute; the panel stays reachable and redirects to `/activate`. Importing a valid license restores the service. User data, configuration and certificates are untouched.

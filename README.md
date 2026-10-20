@@ -18,12 +18,12 @@
 
 ---
 
-Netglimmer 把 [ocserv](https://ocserv.gitlab.io/www/ocserv.html)（OpenConnect / Cisco AnyConnect 兼容协议）的 VPN 服务，包装成一个**单二进制、可离线部署、带 Web 控制台**的成品：26 个功能页覆盖账号、网络策略、证书、态势感知与备份，安装脚本负责从零把一台干净的 Debian/Ubuntu 机器装成可用的 VPN 网关，失败还会自动回退。
+Netglimmer 把 [ocserv](https://ocserv.gitlab.io/www/ocserv.html)（OpenConnect / Cisco AnyConnect 兼容协议）的 VPN 服务，包装成一个**单二进制、可离线部署、带 Web 控制台**的成品：26 个功能页覆盖账号、网络策略、证书、态势感知与备份，内置安装器负责从零把一台干净的 Debian/Ubuntu 机器装成可用的 VPN 网关，失败还会自动回退。
 
 | | |
 |:--|--|
-| **交付形态** | 一个 15 MB 预编译二进制（前端已内嵌）+ 一个 3,060 行安装脚本 + 离线依赖 |
-| **运行时依赖** | 只需 ocserv、nginx、dnsmasq、iptables/ipset —— 全部由脚本装好 |
+| **交付形态** | 一个 15 MB 预编译二进制（前端、安装 / 运维脚本、上下线钩子全部内嵌）+ 离线依赖（仅完整包） |
+| **运行时依赖** | 只需 ocserv、nginx、dnsmasq、iptables/ipset —— 全部由内置安装器装好 |
 | **联网需求** | 安装与运行**可零外联**；离线地图、离线 IP 归属地库、离线授权均已内置 |
 | **管理入口** | 浏览器 HTTPS 面板（默认 `:8443`），后端只监听 `127.0.0.1:8088` |
 
@@ -78,7 +78,7 @@ sudo ./ocserv-manager install
 
 ### 装坏了怎么办
 
-安装脚本带**事务性保护**：重装前先做全量快照（配置、数据库、二进制、systemd 单元、iptables/ipset 规则、服务启停状态），失败或 `Ctrl+C` 中断会**自动回退**并重新拉起原有服务，不会留下"半安装"状态把生产 VPN 弄停。快照保留最近 3 份于 `/var/lib/netglimmer-backup/`。
+内置安装器带**事务性保护**：重装前先做全量快照（配置、数据库、二进制、systemd 单元、iptables/ipset 规则、服务启停状态），失败或 `Ctrl+C` 中断会**自动回退**并重新拉起原有服务，不会留下"半安装"状态把生产 VPN 弄停。快照保留最近 3 份于 `/var/lib/netglimmer-backup/`。
 
 ---
 
@@ -88,7 +88,7 @@ sudo ./ocserv-manager install
 
 | 资产文件 | 体积 | 内容 | 获取方式 |
 |:--|:--|:--|:--|
-| `netglimmer_vpn_install_v1.8_core_linux-amd64.tar.xz` | ~5 MB | 面板二进制（**安装脚本已内嵌其中**）+ ocserv 源码，不含系统 deb | 公开 Release 直接下载 |
+| `netglimmer_vpn_install_v1.8_core_linux-amd64.tar.xz` | ~5 MB | 面板二进制（**安装 / 运维脚本已内嵌其中**）+ ocserv 源码，不含系统 deb | 公开 Release 直接下载 |
 | `SHA256SUMS.txt` | < 1 KB | 公开资产的 SHA256 | 公开 Release 直接下载 |
 | `netglimmer_vpn_install_v1.8_linux-amd64.tar.xz` | ~124 MB | 核心包内容 + `offline-debs/` 196 个 .deb | **不公开**：隔离网/离线部署客户向供应商索取，随附独立校验单 |
 
@@ -226,7 +226,7 @@ sequenceDiagram
 
 - 机器绑定：`/etc/machine-id` + `product_uuid` + CPU 型号哈希出指纹，`.lic` 换机无效
 - 验签公钥**编译进二进制**，替换文件无法伪造授权
-- 本地试用状态用 HMAC 签名，密钥在每台部署机首次构建时随机生成（`/etc/.nglickey`，`0600`），不硬编码于源码
+- 本地试用状态用 HMAC 签名，主密钥在**目标机安装时随机生成**并落盘（`/etc/.nglickey`，`0600`），同时镜像到 ESP 分区以便重装系统后恢复；它既不硬编码于源码，也不随二进制分发
 - 防时间回拨：记录时间水位线，系统时间往回调会被判定为篡改并按到期处理
 - 到期行为：授权守护每分钟巡检，封锁态自动 `systemctl stop ocserv`，面板仍可访问并跳转 `/activate`；导入有效授权后自动拉起服务
 
@@ -270,10 +270,11 @@ netglimmer_vpn_install_release/
 <summary><b>常用命令与服务</b></summary>
 
 ```bash
-systemctl status ocserv ocserv-manager nginx dnsmasq   # 服务状态
-journalctl -u ocserv -f                                # VPN 实时日志
-sudo ./ocserv-manager manage                         # 交互式运维菜单（用户/封禁/资源/组/重置密码/导出备份）
-sudo ./ocserv-manager uninstall               # 卸载
+systemctl status ocserv ocserv-manager nginx dnsmasq    # 服务状态
+journalctl -u ocserv -f                                 # VPN 实时日志
+sudo ./ocserv-manager manage                            # 交互式运维菜单（安装/卸载/用户/组/资源/服务/封禁/重置密码/导出备份）
+sudo ./ocserv-manager uninstall                         # 卸载
+sudo ./ocserv-manager --extract-scripts /tmp/ng-scripts  # 排障：释放内嵌的安装与上下线钩子脚本
 ```
 
 </details>
@@ -281,7 +282,7 @@ sudo ./ocserv-manager uninstall               # 卸载
 <details>
 <summary><b>忘记管理员密码</b></summary>
 
-优先用安装脚本菜单的「重置管理员密码」（会把密码重置为 `netglimmer` 并使所有在线会话失效）。紧急情况可直接写库：
+优先用运维菜单：`sudo ./ocserv-manager manage` → 选项 `9` 重置管理员密码（会把密码重置为 `netglimmer` 并使所有在线会话失效）。紧急情况可直接写库：
 
 ```bash
 /opt/ocserv-manager/ocserv-manager --hash-password '新密码'      # 生成 bcrypt 哈希，无需联网
@@ -326,10 +327,13 @@ sqlite3 /etc/ocserv/ocserv-manager.db "VACUUM;"                                 
 面板默认在 **8443**，不是 443（443 是 VPN 服务端口）。确认安全组/上游防火墙放行了面板端口，并检查 `systemctl status nginx ocserv-manager`。
 
 **目标机完全不能联网，能装吗？**
-能。用完整包 + `--offline`：系统依赖走本地 deb，ocserv 由内置源码编译，面板是预编译二进制（前端已内嵌，不需要 Node/npm）。全程零外联。
+能。用完整包 + `--offline`：系统依赖走本地 deb，ocserv 由内置源码编译，面板是预编译二进制（前端与安装脚本都已内嵌，不需要 Node/npm）。全程零外联。
+
+**包里怎么没有 `.sh` 安装脚本？**
+安装 / 卸载 / 运维菜单与 ocserv 上下线钩子都以压缩形式编译进了 `ocserv-manager`：执行 `sudo ./ocserv-manager install` 时释放到 0700 临时目录运行、结束即清除。需要人工审阅或离线调试时用 `sudo ./ocserv-manager --extract-scripts <目录>` 主动释放，行为与直接 `bash` 执行同一脚本完全一致。
 
 **Ubuntu / ARM64 怎么办？**
-`offline-debs/` 与发行版版本、架构绑定：在同发行版同版本同架构的联网机上跑 `ocserv-manager pack-offline-debs` 重新生成。ARM64 还需源码模式编译面板（预编译二进制是 amd64）。
+`offline-debs/` 与发行版版本、架构绑定：在同发行版同版本同架构的联网机上跑 `sudo ./ocserv-manager pack-offline-debs` 重新生成。ARM64 还需源码模式编译面板（预编译二进制是 amd64）。
 
 **授权到期会发生什么？**
 VPN 服务在 1 分钟内被自动停止，面板仍可访问并跳转到 `/activate`；导入有效授权后服务自动恢复。已建立的用户数据、配置、证书都不受影响。

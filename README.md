@@ -1,7 +1,5 @@
 <div align="center">
 
-![Netglimmer 主视觉](docs/img/banner.png)
-
 # Netglimmer VPN Manager
 
 **基于 ocserv 的企业级 OpenConnect VPN 管理面板 · 一键部署 · 全链路可离线**

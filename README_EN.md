@@ -1,7 +1,5 @@
 <div align="center">
 
-![Netglimmer banner](docs/img/banner.png)
-
 # Netglimmer VPN Manager
 
 **Enterprise-grade OpenConnect (ocserv) VPN management panel · one-click deployment · fully offline-capable**

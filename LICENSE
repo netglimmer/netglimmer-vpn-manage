@@ -1,0 +1,46 @@
+Netglimmer VPN Manager — Commercial Proprietary License
+
+Copyright (c) Netglimmer. All rights reserved.
+
+This repository and the software it distributes are NOT open source.
+The complete terms are set out in EULA.txt, which ships inside every
+release package and governs installation, use, redistribution and
+reverse engineering.
+
+Summary of what you may and may not do:
+
+  MAY
+    - Download and install the release packages for evaluation under the
+      15-day full-featured trial.
+    - Install and use the software on a single server per license, for the
+      duration stated in your .lic license file.
+    - Report defects and request features via this repository's issue tracker.
+
+  MAY NOT
+    - Copy, redistribute, sublicense or resell the software or this repository.
+    - Reverse-engineer, decompile, disassemble, or otherwise attempt to
+      derive source code from the provided binaries.
+    - Modify, bypass or forge licensing, trial, fingerprint or signature
+      mechanisms.
+    - Remove or alter the EULA, notices or integrity manifests.
+
+Open-source components
+
+The panel statically links and/or invokes third-party components that remain
+under their own licenses. Notably:
+
+  - ocserv            GPLv2 / LGPLv2+   shipped as source (ocserv-1.5.0.tar.xz)
+                      and compiled on the target machine; sources are provided
+                      in accordance with the GPL.
+  - nginx, dnsmasq,   various FSF-approved / BSD licenses; installed from your
+    iptables, ipset   distribution's packages, not from this repository.
+  - Vue 3, Element Plus, ECharts, Pinia, vue-i18n  MIT License — distributed
+    only in compiled/bundled form embedded within the panel binary.
+  - gorilla/websocket, mattn/go-sqlite3, golang.org/x/crypto, golang.org/x/net
+    MIT / BSD / Apache-2.0 — statically linked into the panel binary.
+
+Source code for the GPL components is available in the release package. This
+proprietary license does not restrict your rights under those GPL terms.
+
+See EULA.txt for the full agreement. By installing or using this software you
+accept it.

@@ -1,0 +1,67 @@
+================================================================================
+                    NETGLIMMER VPN MANAGER
+              END USER LICENSE AGREEMENT (EULA)
+================================================================================
+
+IMPORTANT — READ CAREFULLY BEFORE INSTALLING OR USING THIS SOFTWARE.
+
+By installing, copying, or otherwise using this software ("Netglimmer VPN
+Manager"), you agree to be bound by the terms of this Agreement. If you do
+not agree, do not install or use the software.
+
+1. LICENSE GRANT
+   Subject to the terms of this Agreement, the licensor grants you a
+   non-exclusive, non-transferable license to install and use one (1) copy
+   of the software on a single server, for the authorized duration specified
+   in your license file (.lic).
+
+2. RESTRICTIONS
+   You shall NOT:
+   (a) Reverse-engineer, decompile, disassemble, or otherwise attempt to
+       derive the source code of the software;
+   (b) Copy, reproduce, or distribute the software or any portion thereof;
+   (c) Modify, adapt, translate, or create derivative works based on the
+       software;
+   (d) Sell, sublicense, rent, lease, or otherwise transfer the software
+       to any third party;
+   (e) Use the software for any unlawful purpose;
+   (f) Remove or alter any proprietary notices, labels, or marks on the
+       software.
+
+3. INTELLECTUAL PROPERTY
+   The software is protected by copyright laws and international copyright
+   treaties. The licensor retains all intellectual property rights in the
+   software, including but not limited to patents, copyrights, trademarks,
+   and trade secrets.
+
+4. OPEN-SOURCE COMPONENTS
+   This software includes ocserv (https://ocserv.gitlab.io/www/), which is
+   licensed under the GNU General Public License v2 (GPLv2). The ocserv
+   source code is provided separately and is subject to its own license
+   terms. This EULA applies only to the Netglimmer proprietary components.
+
+5. NO WARRANTY
+   THE SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+6. LIMITATION OF LIABILITY
+   IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
+   SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING BUT NOT LIMITED
+   TO PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES, LOSS OF USE, DATA, OR
+   PROFITS) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+   ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+7. TERMINATION
+   This Agreement is effective until terminated. It will terminate
+   automatically if you fail to comply with any term. Upon termination,
+   you must destroy all copies of the software.
+
+8. GOVERNING LAW
+   This Agreement shall be governed by and construed in accordance with
+   applicable laws.
+
+================================================================================
+  Copyright (c) 2024-2026 Netglimmer. All rights reserved.
+  Version: 1.7  |  Build Date: 2026-08-30
+================================================================================
